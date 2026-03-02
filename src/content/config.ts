@@ -23,6 +23,7 @@ const posts = defineCollection({
       "evasion",
       "web",
       "cloud",
+      "ctf",
     ]),
 
     os: z.array(z.enum(["linux", "windows", "macos", "all"])),

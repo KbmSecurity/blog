@@ -12,7 +12,8 @@ export type Category =
   | "exfil"
   | "evasion"
   | "web"
-  | "cloud";
+  | "cloud"
+  | "ctf";
 
 export type Difficulty = "easy" | "medium" | "hard" | "expert";
 
@@ -110,6 +111,13 @@ export const CATEGORY_META: Record<
     bg: "bg-[#82b1ff]/10",
     border: "border-[#82b1ff]/30",
     icon: "☁",
+  },
+  ctf: {
+    label: "CTF",
+    color: "text-[#00e5ff]",
+    bg: "bg-[#00e5ff]/10",
+    border: "border-[#00e5ff]/30",
+    icon: "🚩",
   },
 };
 

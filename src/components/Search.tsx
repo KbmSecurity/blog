@@ -566,7 +566,7 @@ export default function Search({ baseUrl }: SearchProps) {
                   flexWrap: "wrap",
                 }}
               >
-                {["recon", "privesc", "evasion", "web", "lateral"].map(
+                {["recon", "privesc", "evasion", "web", "lateral", "ctf"].map(
                   (cat) => (
                     <button
                       key={cat}
