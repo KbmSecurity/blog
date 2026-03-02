@@ -190,7 +190,7 @@ export default function Search({ baseUrl }: SearchProps) {
         limit: 8,
         tolerance: 1,
       });
-      setResults(res.hits.map((h) => h.document as SearchEntry));
+      setResults(res.hits.map((h) => h.document as unknown as SearchEntry));
       setActiveIndex(-1);
     };
 
