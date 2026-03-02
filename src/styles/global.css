@@ -87,269 +87,238 @@
     }
 }
 
-/* ─── Scanlines overlay ───────────────────────────────────────── */
-@layer components {
-    .scanlines {
-        position: relative;
-    }
-
-    .scanlines::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        background: repeating-linear-gradient(0deg,
-                transparent,
-                transparent 2px,
-                rgba(0, 255, 65, 0.012) 2px,
-                rgba(0, 255, 65, 0.012) 4px);
-        z-index: 9998;
-    }
-
-    /* Noise texture */
-    .scanlines::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        opacity: 0.025;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-        background-size: 128px;
-        z-index: 9997;
-    }
-
-    /* ─── Terminal cursor ─────────────────────────────────────── */
-    .term-cursor {
-        display: inline-block;
-        width: 0.55em;
-        height: 1.1em;
-        background: var(--green);
-        animation: blink 1s step-end infinite;
-        vertical-align: text-bottom;
-        margin-left: 2px;
-    }
-
-    /* ─── Prompt line ─────────────────────────────────────────── */
-    .term-prompt {
-        color: var(--text-muted);
-        font-size: 0.8rem;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-    }
-
-    .term-prompt .host {
-        color: var(--green);
-    }
-
-    .term-prompt .sep {
-        color: var(--text-dim);
-    }
-
-    .term-prompt .path {
-        color: var(--blue);
-    }
-
-    .term-prompt .arrow {
-        color: var(--green);
-    }
-
-    /* ─── Card ────────────────────────────────────────────────── */
-    .term-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        transition:
-            border-color 0.2s ease,
-            transform 0.2s ease;
-    }
-
-    .term-card:hover {
-        border-color: var(--border-bright);
-    }
-
-    .term-card-active:hover {
-        border-color: var(--green-dim);
-        transform: translateY(-2px);
-    }
-
-    /* ─── Section heading (slash style) ──────────────────────── */
-    .section-heading {
-        color: var(--text-muted);
-        font-size: 0.75rem;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .section-heading::before {
-        content: "/";
-        color: var(--green);
-        font-size: 1rem;
-    }
-
-    .section-heading::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: var(--border);
-        margin-left: 0.5rem;
-    }
-
-    /* ─── Callout boxes ───────────────────────────────────────── */
-    .callout {
-        border-left: 3px solid;
-        border-radius: 0 4px 4px 0;
-        padding: 0.875rem 1.25rem;
-        margin: 1.5rem 0;
-        font-size: 0.875rem;
-        background: var(--bg-raised);
-    }
-
-    .callout-info {
-        border-color: var(--blue);
-    }
-
-    .callout-warn {
-        border-color: var(--yellow);
-    }
-
-    .callout-danger {
-        border-color: var(--red);
-    }
-
-    .callout-tip {
-        border-color: var(--green);
-    }
-
-    .callout-title {
-        font-weight: 700;
-        font-size: 0.75rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        margin-bottom: 0.4rem;
-    }
-
-    .callout-info .callout-title {
-        color: var(--blue);
-    }
-
-    .callout-warn .callout-title {
-        color: var(--yellow);
-    }
-
-    .callout-danger .callout-title {
-        color: var(--red);
-    }
-
-    .callout-tip .callout-title {
-        color: var(--green);
-    }
-
-    /* ─── Badge / Tag ─────────────────────────────────────────── */
-    .tag-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.15rem 0.5rem;
-        border-radius: 3px;
-        font-size: 0.7rem;
-        font-weight: 500;
-        letter-spacing: 0.05em;
-        border: 1px solid transparent;
-        white-space: nowrap;
-        transition: opacity 0.2s;
-    }
-
-    .tag-badge:hover {
-        opacity: 0.8;
-    }
-
-    /* Difficulty badges */
-    .badge-easy {
-        color: var(--green);
-        border-color: var(--green);
-        background: rgba(0, 255, 65, 0.08);
-    }
-
-    .badge-medium {
-        color: var(--yellow);
-        border-color: var(--yellow);
-        background: rgba(255, 215, 0, 0.08);
-    }
-
-    .badge-hard {
-        color: var(--orange);
-        border-color: var(--orange);
-        background: rgba(255, 152, 0, 0.08);
-    }
-
-    .badge-expert {
-        color: var(--red);
-        border-color: var(--red);
-        background: rgba(255, 60, 60, 0.08);
-    }
-
-    /* Category badges */
-    .cat-recon {
-        color: var(--blue);
-        border-color: var(--blue);
-        background: rgba(79, 195, 247, 0.08);
-    }
-
-    .cat-privesc {
-        color: var(--red);
-        border-color: var(--red);
-        background: rgba(255, 60, 60, 0.08);
-    }
-
-    .cat-lateral {
-        color: var(--purple);
-        border-color: var(--purple);
-        background: rgba(199, 146, 234, 0.08);
-    }
-
-    .cat-exfil {
-        color: var(--orange);
-        border-color: var(--orange);
-        background: rgba(255, 152, 0, 0.08);
-    }
-
-    .cat-evasion {
-        color: var(--green);
-        border-color: var(--green);
-        background: rgba(0, 255, 65, 0.08);
-    }
-
-    .cat-web {
-        color: #26c6da;
-        border-color: #26c6da;
-        background: rgba(38, 198, 218, 0.08);
-    }
-
-    .cat-cloud {
-        color: #80cbc4;
-        border-color: #80cbc4;
-        background: rgba(128, 203, 196, 0.08);
-    }
-
-    /* OS badge */
-    .os-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        padding: 0.1rem 0.45rem;
-        border-radius: 3px;
-        font-size: 0.65rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        background: var(--bg-raised);
-        border: 1px solid var(--border-bright);
-        color: var(--text-muted);
-    }
+/* ─── Terminal cursor ─────────────────────────────────────── */
+.term-cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.1em;
+    background: var(--green);
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+    margin-left: 2px;
 }
+
+/* ─── Prompt line ─────────────────────────────────────────── */
+.term-prompt {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.term-prompt .host {
+    color: var(--green);
+}
+
+.term-prompt .sep {
+    color: var(--text-dim);
+}
+
+.term-prompt .path {
+    color: var(--blue);
+}
+
+.term-prompt .arrow {
+    color: var(--green);
+}
+
+/* ─── Card ────────────────────────────────────────────────── */
+.term-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.term-card:hover {
+    border-color: var(--border-bright);
+}
+
+.term-card-active:hover {
+    border-color: var(--green-dim);
+    transform: translateY(-2px);
+}
+
+/* ─── Section heading (slash style) ──────────────────────── */
+.section-heading {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-heading::before {
+    content: "/";
+    color: var(--green);
+    font-size: 1rem;
+}
+
+.section-heading::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin-left: 0.5rem;
+}
+
+/* ─── Callout boxes ───────────────────────────────────────── */
+.callout {
+    border-left: 3px solid;
+    border-radius: 0 4px 4px 0;
+    padding: 0.875rem 1.25rem;
+    margin: 1.5rem 0;
+    font-size: 0.875rem;
+    background: var(--bg-raised);
+}
+
+.callout-info {
+    border-color: var(--blue);
+}
+
+.callout-warn {
+    border-color: var(--yellow);
+}
+
+.callout-danger {
+    border-color: var(--red);
+}
+
+.callout-tip {
+    border-color: var(--green);
+}
+
+.callout-title {
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.callout-info .callout-title {
+    color: var(--blue);
+}
+
+.callout-warn .callout-title {
+    color: var(--yellow);
+}
+
+.callout-danger .callout-title {
+    color: var(--red);
+}
+
+.callout-tip .callout-title {
+    color: var(--green);
+}
+
+/* ─── Badge / Tag ─────────────────────────────────────────── */
+.tag-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+.tag-badge:hover {
+    opacity: 0.8;
+}
+
+/* Difficulty badges */
+.badge-easy {
+    color: var(--green);
+    border-color: var(--green);
+    background: rgba(0, 255, 65, 0.08);
+}
+
+.badge-medium {
+    color: var(--yellow);
+    border-color: var(--yellow);
+    background: rgba(255, 215, 0, 0.08);
+}
+
+.badge-hard {
+    color: var(--orange);
+    border-color: var(--orange);
+    background: rgba(255, 152, 0, 0.08);
+}
+
+.badge-expert {
+    color: var(--red);
+    border-color: var(--red);
+    background: rgba(255, 60, 60, 0.08);
+}
+
+/* Category badges */
+.cat-recon {
+    color: var(--blue);
+    border-color: var(--blue);
+    background: rgba(79, 195, 247, 0.08);
+}
+
+.cat-privesc {
+    color: var(--red);
+    border-color: var(--red);
+    background: rgba(255, 60, 60, 0.08);
+}
+
+.cat-lateral {
+    color: var(--purple);
+    border-color: var(--purple);
+    background: rgba(199, 146, 234, 0.08);
+}
+
+.cat-exfil {
+    color: var(--orange);
+    border-color: var(--orange);
+    background: rgba(255, 152, 0, 0.08);
+}
+
+.cat-evasion {
+    color: var(--green);
+    border-color: var(--green);
+    background: rgba(0, 255, 65, 0.08);
+}
+
+.cat-web {
+    color: #26c6da;
+    border-color: #26c6da;
+    background: rgba(38, 198, 218, 0.08);
+}
+
+.cat-cloud {
+    color: #80cbc4;
+    border-color: #80cbc4;
+    background: rgba(128, 203, 196, 0.08);
+}
+
+/* OS badge */
+.os-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-bright);
+    color: var(--text-muted);
+}
+
 
 /* ─── Post / Article Prose ────────────────────────────────────── */
 @layer components {

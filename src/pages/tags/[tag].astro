@@ -205,7 +205,7 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
           <div class="grid grid-cols-1 gap-4">
             {matchedPosts.map((post, i) => (
               <div
-                class="animate-fade-in-up"
+                class="animate-fade-in-up h-full"
                 style={`animation-delay: ${i * 0.05}s; opacity: 0; animation-fill-mode: forwards;`}
               >
                 <PostCard post={post} />
