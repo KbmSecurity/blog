@@ -1,0 +1,264 @@
+---
+import type { CollectionEntry } from "astro:content";
+import {
+    formatDate,
+    calcReadingTime,
+    postUrl,
+    tagUrl,
+    CATEGORY_META,
+    DIFFICULTY_META,
+    OS_META,
+} from "../utils/content";
+
+interface Props {
+    post: CollectionEntry<"posts">;
+    featured?: boolean;
+}
+
+const { post, featured = false } = Astro.props;
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+
+const {
+    title,
+    date,
+    description,
+    category,
+    os,
+    difficulty,
+    tags,
+    mitre_tactic,
+    mitre_technique,
+} = post.data;
+
+const readingTime = post.data.readingTime ?? calcReadingTime(post.body);
+const href = postUrl(base, post.slug);
+const catMeta = CATEGORY_META[category];
+const diffMeta = DIFFICULTY_META[difficulty];
+---
+
+<article
+    class:list={[
+        "term-card term-card-active group relative flex flex-col gap-0 overflow-hidden transition-all duration-300",
+        featured ? "md:flex-row" : "",
+    ]}
+>
+    <!-- Top accent line that animates on hover -->
+    <div
+        class:list={[
+            "absolute top-0 left-0 right-0 h-[2px] transition-all duration-300 opacity-0 group-hover:opacity-100",
+            category === "privesc"
+                ? "bg-[#ff3c3c]"
+                : category === "recon"
+                  ? "bg-[#4fc3f7]"
+                  : category === "lateral"
+                    ? "bg-[#c792ea]"
+                    : category === "persistence"
+                      ? "bg-[#ffd700]"
+                      : category === "exfil"
+                        ? "bg-[#ff9800]"
+                        : category === "evasion"
+                          ? "bg-[#00ff41]"
+                          : category === "web"
+                            ? "bg-[#26c6da]"
+                            : "bg-[#82b1ff]",
+        ]}
+    >
+    </div>
+
+    <div class:list={["flex flex-col gap-3 p-5", featured ? "md:p-7" : ""]}>
+        <!-- Header row: category + difficulty + OS -->
+        <div class="flex flex-wrap items-center gap-2">
+            <!-- Category badge -->
+            <a
+                href={tagUrl(base, category)}
+                class:list={[
+                    "tag-badge font-mono text-[0.65rem] tracking-widest uppercase",
+                    `cat-${category}`,
+                ]}
+                title={`View all ${catMeta.label} posts`}
+            >
+                <span class="mr-1 opacity-70">{catMeta.icon}</span>
+                {catMeta.label}
+            </a>
+
+            <!-- Difficulty badge -->
+            <span
+                class:list={[
+                    "tag-badge font-mono text-[0.65rem] tracking-wide",
+                    `badge-${difficulty}`,
+                ]}
+            >
+                {diffMeta.label}
+            </span>
+
+            <!-- OS badges -->
+            {
+                os.map((o) => (
+                    <span class="os-badge">
+                        {OS_META[o].icon}&nbsp;{OS_META[o].label}
+                    </span>
+                ))
+            }
+
+            <!-- MITRE tactic (if present) — right-aligned on larger screens -->
+            {
+                mitre_tactic && (
+                    <a
+                        href={`https://attack.mitre.org/tactics/${mitre_tactic}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="ml-auto hidden sm:inline-flex items-center gap-1 text-[0.6rem] text-[var(--text-dim)] hover:text-[var(--text-muted)] transition-colors font-mono tracking-wide"
+                        title="View on MITRE ATT&CK"
+                    >
+                        <svg
+                            class="w-3 h-3 opacity-60"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"
+                            />
+                        </svg>
+                        {mitre_tactic}
+                        {mitre_technique ? ` · ${mitre_technique}` : ""}
+                    </a>
+                )
+            }
+        </div>
+
+        <!-- Title -->
+        <h2
+            class:list={[
+                "font-mono font-bold leading-snug transition-colors duration-200 group-hover:text-[var(--green)]",
+                featured ? "text-xl md:text-2xl" : "text-base md:text-lg",
+            ]}
+        >
+            <a
+                href={href}
+                class="after:absolute after:inset-0 after:content-['']"
+            >
+                {title}
+            </a>
+        </h2>
+
+        <!-- Description -->
+        <p
+            class="text-[var(--text-muted)] text-sm leading-relaxed line-clamp-2 font-mono"
+        >
+            {description}
+        </p>
+
+        <!-- Footer: meta + tags -->
+        <div
+            class="flex flex-col gap-2 mt-auto pt-3 border-t border-[var(--border)]"
+        >
+            <!-- Meta row -->
+            <div
+                class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[var(--text-dim)] text-[0.7rem] font-mono"
+            >
+                <!-- Date -->
+                <span class="flex items-center gap-1">
+                    <svg
+                        class="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        ></path>
+                    </svg>
+                    <time datetime={post.data.date.toISOString()}>
+                        {formatDate(date)}
+                    </time>
+                </span>
+
+                <!-- Reading time -->
+                <span class="flex items-center gap-1">
+                    <svg
+                        class="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                    </svg>
+                    {readingTime} min read
+                </span>
+
+                <!-- Slug / path hint -->
+                <span class="hidden md:flex items-center gap-1 opacity-50">
+                    <svg
+                        class="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                        ></path>
+                    </svg>
+                    /post/{post.slug}
+                </span>
+
+                <!-- Read arrow — right aligned -->
+                <span
+                    class="ml-auto flex items-center gap-1 text-[var(--text-dim)] group-hover:text-[var(--green)] transition-colors duration-200"
+                >
+                    read
+                    <svg
+                        class="w-3 h-3 transition-transform duration-200 group-hover:translate-x-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </span>
+            </div>
+
+            <!-- Tags row -->
+            {
+                tags.length > 0 && (
+                    <div class="flex flex-wrap gap-1.5">
+                        {tags.slice(0, 5).map((tag) => (
+                            <a
+                                href={tagUrl(base, tag)}
+                                class="relative z-10 inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] font-mono
+                     text-[var(--text-dim)] bg-[var(--bg-raised)] border border-[var(--border)]
+                     hover:text-[var(--green)] hover:border-[var(--green)]/30 transition-colors duration-150"
+                            >
+                                #{tag}
+                            </a>
+                        ))}
+                        {tags.length > 5 && (
+                            <span class="inline-flex items-center px-2 py-0.5 text-[0.65rem] font-mono text-[var(--text-dim)]">
+                                +{tags.length - 5} more
+                            </span>
+                        )}
+                    </div>
+                )
+            }
+        </div>
+    </div>
+</article>

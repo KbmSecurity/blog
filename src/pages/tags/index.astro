@@ -1,0 +1,360 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import {
+  filterPublished,
+  getAllTags,
+  getPostsByCategory,
+  getPostsByTag,
+  CATEGORY_META,
+  tagUrl,
+  categoryUrl,
+  type Category,
+} from '../../utils/content';
+
+const rawBase   = import.meta.env.BASE_URL;
+const base      = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+const allPosts  = await getCollection('posts');
+const published = filterPublished(allPosts);
+
+// All tags sorted by count
+const allTags = getAllTags(published);
+
+// Tags grouped by the categories they appear in
+const categories = Object.keys(CATEGORY_META) as Category[];
+
+// For each category, get the tags that appear in its posts
+const tagsByCategory = categories
+  .map((cat) => {
+    const catPosts = getPostsByCategory(published, cat);
+    const tags     = getAllTags(catPosts);
+    return { cat, meta: CATEGORY_META[cat], count: catPosts.length, tags };
+  })
+  .filter(({ count }) => count > 0);
+
+// Tags not associated with any category posts (global-only tags)
+const categorisedTagNames = new Set(
+  tagsByCategory.flatMap(({ tags }) => tags.map((t) => t.tag))
+);
+const uncategorisedTags = allTags.filter(({ tag }) => !categorisedTagNames.has(tag));
+
+const breadcrumbs = [
+  { label: 'blog', href: base },
+  { label: 'tags' },
+];
+---
+
+<BaseLayout
+  title="Tags & Categories — r3d/ops | KBM Security"
+  description="Browse all offensive security topics, techniques, and MITRE ATT&CK categories available in the r3d/ops knowledge base."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ── Breadcrumb ──────────────────────────────────────────────────── -->
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- ── Page header ────────────────────────────────────────────────── -->
+    <header class="mb-10 animate-fade-in-up">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-[var(--green)] text-sm font-mono">$</span>
+        <span class="text-[var(--text-muted)] text-xs font-mono uppercase tracking-widest">
+          ls -la ~/r3d/ops/tags/
+        </span>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl font-bold font-mono text-[var(--text)] mb-3">
+        <span class="text-[var(--text-dim)] font-normal">/ </span>tags
+        <span class="text-[var(--text-dim)] font-normal"> &amp; </span>categories
+      </h1>
+
+      <p class="text-[var(--text-muted)] text-sm font-mono leading-relaxed max-w-2xl">
+        All topics indexed in this knowledge base. Click any tag or category to filter posts.
+      </p>
+
+      <!-- Stats -->
+      <div class="mt-4 flex flex-wrap gap-5 text-xs font-mono">
+        <span class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-[var(--green)]"></span>
+          <span class="text-[var(--text-dim)]">categories:</span>
+          <span class="text-[var(--green)]">{tagsByCategory.length}</span>
+        </span>
+        <span class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-[var(--blue)]"></span>
+          <span class="text-[var(--text-dim)]">unique tags:</span>
+          <span class="text-[var(--blue)]">{allTags.length}</span>
+        </span>
+        <span class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-[var(--purple)]"></span>
+          <span class="text-[var(--text-dim)]">total posts:</span>
+          <span class="text-[var(--purple)]">{published.length}</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- ── Category cards ─────────────────────────────────────────────── -->
+    <section class="mb-14" aria-labelledby="categories-heading">
+      <h2 id="categories-heading" class="section-heading mb-6">attack categories</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {tagsByCategory.map(({ cat, meta, count, tags }, i) => (
+          <div
+            class="term-card group flex flex-col gap-3 p-5 animate-fade-in-up"
+            style={`animation-delay:${i * 0.05}s; opacity:0; animation-fill-mode:forwards;`}
+          >
+            <!-- Category header -->
+            <div class="flex items-center justify-between">
+              <a
+                href={categoryUrl(base, cat)}
+                class:list={[
+                  'tag-badge font-mono text-[0.65rem] tracking-widest uppercase transition-opacity hover:opacity-80',
+                  `cat-${cat}`,
+                ]}
+              >
+                <span class="mr-1 opacity-70">{meta.icon}</span>
+                {meta.label}
+              </a>
+              <span class="text-[var(--text-dim)] text-[0.65rem] font-mono">
+                {count} post{count !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            <!-- Divider -->
+            <div class="h-px bg-[var(--border)]"></div>
+
+            <!-- Tag list for this category -->
+            {tags.length > 0 ? (
+              <div class="flex flex-wrap gap-1.5">
+                {tags.slice(0, 10).map(({ tag, count: tagCount }) => (
+                  <a
+                    href={tagUrl(base, tag)}
+                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[0.65rem] font-mono
+                           text-[var(--text-dim)] bg-[var(--bg-raised)] border border-[var(--border)]
+                           hover:text-[var(--green)] hover:border-[var(--green)]/30
+                           transition-colors duration-150"
+                    title={`${tagCount} post${tagCount !== 1 ? 's' : ''}`}
+                  >
+                    #{tag}
+                    <span class="text-[var(--text-dim)] text-[0.55rem] opacity-70">
+                      {tagCount}
+                    </span>
+                  </a>
+                ))}
+                {tags.length > 10 && (
+                  <a
+                    href={categoryUrl(base, cat)}
+                    class="inline-flex items-center px-2 py-0.5 text-[0.65rem] font-mono
+                           text-[var(--text-dim)] hover:text-[var(--green)] transition-colors"
+                  >
+                    +{tags.length - 10} more
+                  </a>
+                )}
+              </div>
+            ) : (
+              <p class="text-[var(--text-dim)] text-xs font-mono italic">no tags yet</p>
+            )}
+
+            <!-- View all link -->
+            <a
+              href={categoryUrl(base, cat)}
+              class:list={[
+                'mt-auto text-[0.7rem] font-mono flex items-center gap-1 transition-colors duration-150',
+                meta.color,
+                'opacity-60 hover:opacity-100',
+              ]}
+            >
+              view all {meta.label.toLowerCase()} posts
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── Full tag cloud ──────────────────────────────────────────────── -->
+    <section class="mb-14" aria-labelledby="all-tags-heading">
+      <h2 id="all-tags-heading" class="section-heading mb-6">all tags</h2>
+
+      <!-- Sort controls -->
+      <div class="flex items-center gap-3 mb-5" id="sort-controls">
+        <span class="text-[var(--text-dim)] text-xs font-mono">sort:</span>
+        <button
+          id="sort-count"
+          class="px-2.5 py-1 text-[0.7rem] font-mono rounded border
+                 border-[var(--green)] text-[var(--green)] bg-[var(--green)]/5
+                 hover:bg-[var(--green)]/10 transition-all duration-150"
+          data-active="true"
+        >
+          by count
+        </button>
+        <button
+          id="sort-alpha"
+          class="px-2.5 py-1 text-[0.7rem] font-mono rounded border
+                 border-[var(--border)] text-[var(--text-muted)]
+                 hover:border-[var(--border-bright)] hover:text-[var(--text)]
+                 transition-all duration-150"
+          data-active="false"
+        >
+          a→z
+        </button>
+      </div>
+
+      <!-- Tag cloud — size reflects count -->
+      <div id="tag-cloud" class="flex flex-wrap gap-2 items-center">
+        {allTags.map(({ tag, count }, i) => {
+          // Scale font size by count (min 0.65rem → max 1rem)
+          const max    = allTags[0]?.count ?? 1;
+          const scale  = Math.max(0, (count - 1) / Math.max(max - 1, 1));
+          const size   = 0.65 + scale * 0.45;
+          const weight = count > max * 0.6 ? '600' : '400';
+
+          return (
+            <a
+              href={tagUrl(base, tag)}
+              data-tag={tag}
+              data-count={count}
+              class="inline-flex items-center gap-1 px-2.5 py-1 rounded border font-mono
+                     text-[var(--text-dim)] bg-[var(--bg-card)] border-[var(--border)]
+                     hover:text-[var(--green)] hover:border-[var(--green)]/30
+                     hover:bg-[var(--green)]/5 transition-all duration-150
+                     animate-fade-in-up"
+              style={`font-size:${size}rem; font-weight:${weight};
+                      animation-delay:${i * 0.015}s; opacity:0; animation-fill-mode:forwards;`}
+              title={`${count} post${count !== 1 ? 's' : ''}`}
+            >
+              #{tag}
+              <span
+                class="text-[var(--text-dim)] rounded px-1 py-0 bg-[var(--bg-raised)]
+                       border border-[var(--border)] text-[0.55rem]"
+              >
+                {count}
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- ── MITRE ATT&CK quick-ref ──────────────────────────────────────── -->
+    <section aria-labelledby="mitre-heading">
+      <h2 id="mitre-heading" class="section-heading mb-6">mitre att&amp;ck tactics</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {[
+          { id: 'TA0043', name: 'Reconnaissance',        color: '#4fc3f7' },
+          { id: 'TA0001', name: 'Initial Access',        color: '#ff9800' },
+          { id: 'TA0002', name: 'Execution',             color: '#ffd700' },
+          { id: 'TA0003', name: 'Persistence',           color: '#ffd700' },
+          { id: 'TA0004', name: 'Privilege Escalation',  color: '#ff3c3c' },
+          { id: 'TA0005', name: 'Defense Evasion',       color: '#00ff41' },
+          { id: 'TA0006', name: 'Credential Access',     color: '#c792ea' },
+          { id: 'TA0007', name: 'Discovery',             color: '#4fc3f7' },
+          { id: 'TA0008', name: 'Lateral Movement',      color: '#c792ea' },
+          { id: 'TA0009', name: 'Collection',            color: '#ff9800' },
+          { id: 'TA0010', name: 'Exfiltration',          color: '#ff9800' },
+          { id: 'TA0011', name: 'Command & Control',     color: '#82b1ff' },
+        ].map(({ id, name, color }) => {
+          const tacticPosts = published.filter(
+            (p) => p.data.mitre_tactic === id
+          );
+          return (
+            <a
+              href={`https://attack.mitre.org/tactics/${id}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group flex items-center gap-3 p-3 rounded border
+                     border-[var(--border)] bg-[var(--bg-card)] font-mono
+                     hover:border-[var(--border-bright)] hover:bg-[var(--bg-raised)]
+                     transition-all duration-150"
+            >
+              <span
+                class="shrink-0 w-1.5 h-8 rounded-sm"
+                style={`background:${color};`}
+              ></span>
+              <div class="flex-1 min-w-0">
+                <div class="text-[0.65rem] text-[var(--text-dim)] tracking-widest mb-0.5">
+                  {id}
+                </div>
+                <div class="text-xs text-[var(--text-muted)] group-hover:text-[var(--text)]
+                            transition-colors truncate">
+                  {name}
+                </div>
+              </div>
+              <div class="shrink-0 flex items-center gap-2 text-[0.65rem]">
+                {tacticPosts.length > 0 && (
+                  <span
+                    class="px-1.5 py-0.5 rounded text-[var(--green)]
+                           bg-[var(--green)]/10 border border-[var(--green)]/20"
+                  >
+                    {tacticPosts.length} post{tacticPosts.length !== 1 ? 's' : ''}
+                  </span>
+                )}
+                <svg
+                  class="w-3 h-3 text-[var(--text-dim)] group-hover:text-[var(--text)]
+                         transition-colors opacity-50"
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+                </svg>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+
+      <p class="mt-4 text-[0.65rem] text-[var(--text-dim)] font-mono">
+        Post counts reflect content in this knowledge base only.
+        Full framework at{' '}
+        <a
+          href="https://attack.mitre.org"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[var(--blue)] hover:underline"
+        >
+          attack.mitre.org
+        </a>.
+      </p>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<!-- ── Client: tag cloud sort ──────────────────────────────────────────── -->
+<script>
+  const cloud    = document.getElementById('tag-cloud')!;
+  const btnCount = document.getElementById('sort-count')!;
+  const btnAlpha = document.getElementById('sort-alpha')!;
+
+  const ACTIVE_CLS   = 'border-[var(--green)] text-[var(--green)] bg-[var(--green)]/5';
+  const INACTIVE_CLS = 'border-[var(--border)] text-[var(--text-muted)]';
+
+  function setActive(btn: HTMLElement, other: HTMLElement) {
+    btn.classList.remove(...INACTIVE_CLS.split(' '));
+    btn.classList.add(...ACTIVE_CLS.split(' '));
+    other.classList.remove(...ACTIVE_CLS.split(' '));
+    other.classList.add(...INACTIVE_CLS.split(' '));
+  }
+
+  function sortCloud(by: 'count' | 'alpha') {
+    const links = [...cloud.querySelectorAll<HTMLAnchorElement>('a[data-tag]')];
+    links.sort((a, b) =>
+      by === 'count'
+        ? parseInt(b.dataset.count ?? '0') - parseInt(a.dataset.count ?? '0')
+        : (a.dataset.tag ?? '').localeCompare(b.dataset.tag ?? '')
+    );
+    links.forEach((el) => cloud.appendChild(el));
+  }
+
+  btnCount.addEventListener('click', () => {
+    sortCloud('count');
+    setActive(btnCount, btnAlpha);
+  });
+
+  btnAlpha.addEventListener('click', () => {
+    sortCloud('alpha');
+    setActive(btnAlpha, btnCount);
+  });
+</script>

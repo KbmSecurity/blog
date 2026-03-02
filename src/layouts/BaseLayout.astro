@@ -1,0 +1,126 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import TopNav from '../components/TopNav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishDate?: Date;
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  image,
+  type = 'website',
+  publishDate,
+  class: className = '',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <BaseHead
+      title={title}
+      description={description}
+      image={image}
+      type={type}
+      publishDate={publishDate}
+    />
+  </head>
+
+  <body class={`scanlines bg-term-bg text-term-text font-mono antialiased min-h-screen flex flex-col ${className}`}>
+
+    <!-- Fixed top navigation -->
+    <TopNav />
+
+    <!-- Main content area -->
+    <main class="flex-1 w-full">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <Footer />
+
+    <!-- Global: inject copy buttons + lang labels into all code blocks -->
+    <script>
+      function initCodeBlocks() {
+        document.querySelectorAll('pre').forEach((pre) => {
+          // Avoid double-initializing
+          if (pre.dataset.initialized) return;
+          pre.dataset.initialized = 'true';
+
+          // Make pre relative for absolute children
+          pre.style.position = 'relative';
+
+          // ── Language label ─────────────────────────────────────────
+          const code = pre.querySelector('code');
+          if (code) {
+            // Shiki puts the language in class="language-xxx"
+            const langClass = [...code.classList].find((c) =>
+              c.startsWith('language-')
+            );
+            if (langClass) {
+              const lang = langClass.replace('language-', '');
+              const label = document.createElement('span');
+              label.textContent = lang;
+              label.className   = 'lang-label';
+              pre.appendChild(label);
+            }
+          }
+
+          // ── Copy button ────────────────────────────────────────────
+          const btn = document.createElement('button');
+          btn.textContent = 'copy';
+          btn.className   = 'copy-btn';
+          btn.setAttribute('aria-label', 'Copy code to clipboard');
+
+          btn.addEventListener('click', async () => {
+            const text = code?.textContent ?? pre.textContent ?? '';
+            try {
+              await navigator.clipboard.writeText(text);
+              btn.textContent = '✓ copied';
+              btn.classList.add('copied');
+              setTimeout(() => {
+                btn.textContent = 'copy';
+                btn.classList.remove('copied');
+              }, 2000);
+            } catch {
+              btn.textContent = 'error';
+              setTimeout(() => {
+                btn.textContent = 'copy';
+              }, 2000);
+            }
+          });
+
+          pre.appendChild(btn);
+        });
+      }
+
+      // Run on load
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCodeBlocks);
+      } else {
+        initCodeBlocks();
+      }
+    </script>
+
+    <!-- Smooth page entry animation -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.style.opacity = '0';
+        document.body.style.transition = 'opacity 0.2s ease';
+        requestAnimationFrame(() => {
+          document.body.style.opacity = '1';
+        });
+      });
+    </script>
+
+  </body>
+</html>

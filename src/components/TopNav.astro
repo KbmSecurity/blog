@@ -1,0 +1,351 @@
+---
+import Search from "./Search.tsx";
+
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+    { href: `${base}`, label: "~/blog", exact: true },
+    { href: `${base}tags/recon`, label: "recon" },
+    { href: `${base}tags/privesc`, label: "privesc" },
+    { href: `${base}tags/evasion`, label: "evasion" },
+    { href: `${base}tags/web`, label: "web" },
+];
+
+function isActive(href: string, exact = false): boolean {
+    if (exact) return currentPath === href;
+    return currentPath.startsWith(href) && href !== `${base}`;
+}
+---
+
+<header
+    id="topnav"
+    class="fixed top-0 left-0 right-0 z-50 h-12 border-b border-[#1c1c1c] bg-[#0a0a0a]/95 backdrop-blur-sm"
+>
+    <div
+        class="max-w-7xl mx-auto h-full px-4 flex items-center justify-between gap-6"
+    >
+        <!-- ── Logo ──────────────────────────────────────────────── -->
+        <a
+            href={base}
+            class="flex items-center gap-2 shrink-0 group"
+            aria-label="r3d/ops home"
+        >
+            <span
+                class="text-[#ff3c3c] font-bold text-sm tracking-tight leading-none group-hover:animate-[glitch_0.3s_ease-in-out]"
+            >
+                r3d
+            </span>
+            <span class="text-[#444d56] text-sm">/</span>
+            <span
+                class="text-[#c9d1d9] font-bold text-sm tracking-tight leading-none"
+            >
+                ops
+            </span>
+            <span
+                class="hidden sm:inline-flex items-center gap-1 ml-1 px-1.5 py-0.5 rounded border border-[#1c1c1c] bg-[#111111] text-[0.6rem] text-[#6e7681] tracking-wider uppercase"
+            >
+                KBM Security
+            </span>
+        </a>
+
+        <!-- ── Desktop nav links ──────────────────────────────────── -->
+        <nav
+            class="hidden md:flex items-center gap-6"
+            aria-label="Main navigation"
+        >
+            {
+                navLinks.map(({ href, label, exact }) => (
+                    <a
+                        href={href}
+                        class:list={[
+                            "nav-link text-xs tracking-wide transition-colors duration-150",
+                            isActive(href, exact)
+                                ? "text-[#00ff41] nav-link active"
+                                : "text-[#6e7681] hover:text-[#c9d1d9]",
+                        ]}
+                    >
+                        {isActive(href, exact) && (
+                            <span class="text-[#00ff41] mr-0.5 text-xs">›</span>
+                        )}
+                        {label}
+                    </a>
+                ))
+            }
+        </nav>
+
+        <!-- ── Right side: search + external link + hamburger ──── -->
+        <div class="flex items-center gap-3">
+            <!-- Search island (React) -->
+            <Search client:load baseUrl={base} />
+
+            <!-- Link to main KBM site -->
+            <a
+                href="https://www.kbmsecurity.com.br"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-[0.7rem] tracking-wide
+               border border-[#1c1c1c] rounded text-[#6e7681] hover:text-[#00ff41]
+               hover:border-[#00ff41]/30 transition-all duration-150"
+                title="Back to KBM Security"
+            >
+                <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <path
+                        d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                    ></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                kbmsecurity.com.br
+            </a>
+
+            <!-- Mobile hamburger button -->
+            <button
+                id="nav-toggle"
+                class="md:hidden flex items-center justify-center w-8 h-8
+               text-[#6e7681] hover:text-[#00ff41] transition-colors duration-150"
+                aria-label="Toggle navigation menu"
+                aria-expanded="false"
+                aria-controls="mobile-menu"
+            >
+                <!--
+                    Single SVG with three lines at y=5, y=10, y=15.
+                    Each line's transform-origin is pinned to its own y position
+                    (ham-top→10px 5px, ham-mid→10px 10px, ham-bot→10px 15px).
+                    On open, JS applies translateY(±5px) rotate(±45deg):
+                      • the translateY slides each outer line to y=10 (SVG centre)
+                      • the rotate then spins it 45° around that translated centre
+                      • result: both outer lines form a perfect × through (10,10)
+                    The middle line fades out via opacity.
+                    All CSS transitions are declared inline on each <line>.
+                -->
+                <svg
+                    id="ham-svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    aria-hidden="true"
+                    style="overflow: visible;"
+                >
+                    <line
+                        id="ham-top"
+                        x1="1"
+                        y1="5"
+                        x2="19"
+                        y2="5"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        style="transform-origin: 10px 5px; transition: transform 0.25s ease, opacity 0.25s ease;"
+                    ></line>
+                    <line
+                        id="ham-mid"
+                        x1="1"
+                        y1="10"
+                        x2="19"
+                        y2="10"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        style="transform-origin: 10px 10px; transition: transform 0.25s ease, opacity 0.25s ease;"
+                    ></line>
+                    <line
+                        id="ham-bottom"
+                        x1="1"
+                        y1="15"
+                        x2="19"
+                        y2="15"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        style="transform-origin: 10px 15px; transition: transform 0.25s ease, opacity 0.25s ease;"
+                    ></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!--
+    ── Mobile menu overlay ──────────────────────────────────────────────────────
+    IMPORTANT: this div lives OUTSIDE <header> on purpose.
+    The header has backdrop-filter which, per CSS spec, makes it the containing
+    block for any position:fixed descendants — so a fixed child inside the header
+    would be clipped to the header's 48 px height and become invisible.
+    Placing this sibling to <header> lets position:fixed + inset-0 work against
+    the real viewport.
+-->
+<div
+    id="mobile-menu"
+    role="dialog"
+    aria-label="Mobile navigation"
+    aria-hidden="true"
+    aria-modal="true"
+    style="display:none;"
+    class="fixed inset-0 top-12 z-[60] flex-col
+           bg-[#0a0a0a]/98 backdrop-blur-md
+           border-t border-[#1c1c1c]
+           p-6 gap-1 overflow-y-auto
+           md:hidden"
+>
+    <!-- Prompt decoration -->
+    <p class="term-prompt text-xs mb-4">
+        <span class="host">root@kbm</span>
+        <span class="sep">:</span>
+        <span class="path">~/blog</span>
+        <span class="arrow">$</span>
+        <span class="text-[#c9d1d9]">navigate</span>
+    </p>
+
+    {
+        navLinks.map(({ href, label, exact }) => (
+            <a
+                href={href}
+                class:list={[
+                    "flex items-center gap-2 py-3 px-4 rounded border text-sm transition-all duration-150",
+                    isActive(href, exact)
+                        ? "border-[#00ff41]/20 bg-[#00ff41]/5 text-[#00ff41]"
+                        : "border-[#1c1c1c] text-[#6e7681] hover:text-[#c9d1d9] hover:border-[#2a2a2a]",
+                ]}
+            >
+                <span
+                    class:list={[
+                        "text-xs",
+                        isActive(href, exact)
+                            ? "text-[#00ff41]"
+                            : "text-[#444d56]",
+                    ]}
+                >
+                    ›
+                </span>
+                {label}
+                {isActive(href, exact) && (
+                    <span class="ml-auto text-[0.6rem] text-[#00ff41] tracking-wider uppercase">
+                        active
+                    </span>
+                )}
+            </a>
+        ))
+    }
+
+    <div class="mt-auto pt-6 border-t border-[#1c1c1c]">
+        <a
+            href="https://www.kbmsecurity.com.br"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-2 text-xs text-[#6e7681] hover:text-[#00ff41] transition-colors"
+        >
+            <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path
+                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                ></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            kbmsecurity.com.br — Red Team Services
+        </a>
+
+        <p class="mt-4 text-[0.65rem] text-[#444d56] leading-relaxed">
+            ⚠ Authorized use only. All content is for educational and
+            professional security research purposes.
+        </p>
+    </div>
+</div>
+
+<!-- Spacer to push content below fixed nav -->
+<div class="h-12" aria-hidden="true"></div>
+
+<script>
+    // ── Element refs ──────────────────────────────────────────────────────────
+    const toggle = document.getElementById(
+        "nav-toggle",
+    ) as HTMLButtonElement | null;
+    const menu = document.getElementById(
+        "mobile-menu",
+    ) as HTMLDivElement | null;
+    const hamTop = document.getElementById("ham-top") as SVGLineElement | null;
+    const hamMid = document.getElementById("ham-mid") as SVGLineElement | null;
+    const hamBot = document.getElementById(
+        "ham-bottom",
+    ) as SVGLineElement | null;
+
+    if (!toggle || !menu) {
+        console.warn("[TopNav] hamburger elements not found – skipping setup");
+    } else {
+        let isOpen = false;
+
+        // ── Open / close ──────────────────────────────────────────────────────
+        function setMenu(state: boolean) {
+            isOpen = state;
+
+            // Toggle visibility with display flex/none (no Tailwind class conflict)
+            menu!.style.display = state ? "flex" : "none";
+            menu!.setAttribute("aria-hidden", String(!state));
+            menu!.setAttribute("aria-modal", String(state));
+            toggle!.setAttribute("aria-expanded", String(state));
+
+            // Lock / unlock body scroll
+            document.body.style.overflow = state ? "hidden" : "";
+
+            // ── Animate hamburger ↔ X ─────────────────────────────────────────
+            // Each SVG line has its own transform-origin set inline (10px Ypx),
+            // which anchors rotation exactly at the SVG's horizontal midpoint.
+            // Top line: lives at y=5, must reach y=10 → translateY(+5px) then rotate 45°
+            // Mid line: fades out in-place
+            // Bot line: lives at y=15, must reach y=10 → translateY(-5px) then rotate -45°
+            if (hamTop && hamMid && hamBot) {
+                if (state) {
+                    (hamTop as SVGLineElement).style.transform =
+                        "translateY(5px) rotate(45deg)";
+                    (hamMid as SVGLineElement).style.opacity = "0";
+                    (hamBot as SVGLineElement).style.transform =
+                        "translateY(-5px) rotate(-45deg)";
+                } else {
+                    (hamTop as SVGLineElement).style.transform = "";
+                    (hamMid as SVGLineElement).style.opacity = "1";
+                    (hamBot as SVGLineElement).style.transform = "";
+                }
+            }
+        }
+
+        // ── Toggle on button click ────────────────────────────────────────────
+        toggle.addEventListener("click", () => setMenu(!isOpen));
+
+        // ── Close when a nav link is tapped ──────────────────────────────────
+        menu.querySelectorAll("a").forEach((link) => {
+            link.addEventListener("click", () => setMenu(false));
+        });
+
+        // ── Close on backdrop tap (touch outside the link list) ───────────────
+        menu.addEventListener("click", (e) => {
+            if (e.target === menu) setMenu(false);
+        });
+
+        // ── Close on Escape key ───────────────────────────────────────────────
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && isOpen) setMenu(false);
+        });
+
+        // ── Close menu if viewport grows past mobile breakpoint ───────────────
+        const mql = window.matchMedia("(min-width: 768px)");
+        mql.addEventListener("change", (e) => {
+            if (e.matches && isOpen) setMenu(false);
+        });
+    }
+</script>

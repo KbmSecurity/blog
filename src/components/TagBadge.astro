@@ -1,0 +1,83 @@
+---
+import type { Category, Difficulty, OS } from "../utils/content";
+import { CATEGORY_META, DIFFICULTY_META, OS_META } from "../utils/content";
+
+interface Props {
+    type?: "tag" | "category" | "difficulty" | "os";
+    value: string;
+    href?: string;
+    size?: "sm" | "md";
+}
+
+const { type = "tag", value, href, size = "md" } = Astro.props;
+
+let classes = "tag-badge font-mono ";
+let label = value;
+let icon = "";
+
+switch (type) {
+    case "category": {
+        const meta = CATEGORY_META[value as Category];
+        if (meta) {
+            classes += `${meta.color} ${meta.bg} border ${meta.border}`;
+            label = meta.label;
+            icon = meta.icon;
+        } else {
+            classes +=
+                "text-[var(--text-muted)] bg-[var(--bg-raised)] border border-[var(--border-bright)]";
+        }
+        break;
+    }
+    case "difficulty": {
+        const meta = DIFFICULTY_META[value as Difficulty];
+        if (meta) {
+            classes += `${meta.color} ${meta.bg} border ${meta.border}`;
+            label = meta.label;
+        } else {
+            classes +=
+                "text-[var(--text-muted)] bg-[var(--bg-raised)] border border-[var(--border-bright)]";
+        }
+        break;
+    }
+    case "os": {
+        const meta = OS_META[value as OS];
+        classes += "os-badge";
+        label = meta?.label ?? value;
+        icon = meta?.icon ?? "";
+        break;
+    }
+    default: {
+        // Generic tag
+        classes +=
+            "text-[var(--text-dim)] bg-[var(--bg-raised)] border border-[var(--border)] " +
+            "hover:text-[var(--green)] hover:border-[var(--green)]/30 transition-colors duration-150";
+        break;
+    }
+}
+
+if (size === "sm") {
+    classes += " text-[0.6rem] px-1.5 py-0";
+}
+---
+
+{
+    href ? (
+        <a href={href} class={classes}>
+            {icon && (
+                <span class="mr-1 opacity-70" aria-hidden="true">
+                    {icon}
+                </span>
+            )}
+            {label}
+        </a>
+    ) : (
+        <span class={classes}>
+            {icon && (
+                <span class="mr-1 opacity-70" aria-hidden="true">
+                    {icon}
+                </span>
+            )}
+            {label}
+        </span>
+    )
+}

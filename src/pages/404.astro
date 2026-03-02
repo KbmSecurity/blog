@@ -1,0 +1,196 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+const path = Astro.url.pathname;
+---
+
+<BaseLayout
+    title="404 — Page Not Found | r3d/ops"
+    description="The page you're looking for doesn't exist or has been moved."
+>
+    <div
+        class="min-h-[80vh] flex flex-col items-center justify-center px-4 py-24"
+    >
+        <!-- Terminal window -->
+        <div
+            class="w-full max-w-xl border border-[#1c1c1c] rounded-lg overflow-hidden bg-[#111111] shadow-[0_24px_64px_rgba(0,0,0,0.5)]"
+        >
+            <!-- Window chrome -->
+            <div
+                class="flex items-center gap-1.5 px-4 py-2.5 border-b border-[#1c1c1c] bg-[#0d0d0d]"
+            >
+                <span class="w-2.5 h-2.5 rounded-full bg-[#ff3c3c]/70"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-[#ffd700]/70"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-[#00ff41]/70"></span>
+                <span
+                    class="flex-1 text-center text-[#444d56] text-[0.6rem] font-mono tracking-wide"
+                >
+                    bash — r3d/ops
+                </span>
+            </div>
+
+            <!-- Terminal output -->
+            <div class="p-6 font-mono text-sm space-y-2">
+                <!-- Command 1: cat the missing path -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-[#00ff41]">root@kbm</span>
+                    <span class="text-[#444d56]">:</span>
+                    <span class="text-[#4fc3f7]">~/r3d/ops</span>
+                    <span class="text-[#00ff41]">$</span>
+                    <span class="text-[#c9d1d9]"
+                        >cat <span class="text-[#ffd700]">{path}</span></span
+                    >
+                </div>
+
+                <p class="text-[#ff3c3c] pl-1">
+                    cat: {path}: No such file or directory
+                </p>
+
+                <!-- Command 2: exit code -->
+                <div class="flex items-center gap-2 mt-3 flex-wrap">
+                    <span class="text-[#00ff41]">root@kbm</span>
+                    <span class="text-[#444d56]">:</span>
+                    <span class="text-[#4fc3f7]">~/r3d/ops</span>
+                    <span class="text-[#00ff41]">$</span>
+                    <span class="text-[#c9d1d9]">echo $?</span>
+                </div>
+
+                <p
+                    class="text-[#ffd700] pl-1 text-2xl font-bold tracking-widest"
+                >
+                    404
+                </p>
+
+                <!-- Command 3: ls available sections -->
+                <div class="flex items-center gap-2 mt-3 flex-wrap">
+                    <span class="text-[#00ff41]">root@kbm</span>
+                    <span class="text-[#444d56]">:</span>
+                    <span class="text-[#4fc3f7]">~/r3d/ops</span>
+                    <span class="text-[#00ff41]">$</span>
+                    <span class="text-[#c9d1d9]">ls -1 {base}</span>
+                </div>
+
+                <div
+                    class="pl-1 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-1 text-xs pt-1"
+                >
+                    <a
+                        href={`${base}tags/recon`}
+                        class="text-[#4fc3f7] hover:underline">recon/</a
+                    >
+                    <a
+                        href={`${base}tags/privesc`}
+                        class="text-[#ff3c3c] hover:underline">privesc/</a
+                    >
+                    <a
+                        href={`${base}tags/lateral`}
+                        class="text-[#c792ea] hover:underline">lateral/</a
+                    >
+                    <a
+                        href={`${base}tags/persistence`}
+                        class="text-[#ffd700] hover:underline">persistence/</a
+                    >
+                    <a
+                        href={`${base}tags/exfil`}
+                        class="text-[#ff9800] hover:underline">exfil/</a
+                    >
+                    <a
+                        href={`${base}tags/evasion`}
+                        class="text-[#00ff41] hover:underline">evasion/</a
+                    >
+                    <a
+                        href={`${base}tags/web`}
+                        class="text-[#26c6da] hover:underline">web/</a
+                    >
+                    <a
+                        href={`${base}tags/cloud`}
+                        class="text-[#82b1ff] hover:underline">cloud/</a
+                    >
+                </div>
+
+                <!-- Command 4: suggest fix -->
+                <div class="flex items-center gap-2 mt-3 flex-wrap">
+                    <span class="text-[#00ff41]">root@kbm</span>
+                    <span class="text-[#444d56]">:</span>
+                    <span class="text-[#4fc3f7]">~/r3d/ops</span>
+                    <span class="text-[#00ff41]">$</span>
+                    <span class="text-[#c9d1d9]"
+                        >cd <a
+                            href={base}
+                            class="text-[#4fc3f7] hover:underline">~/blog</a
+                        ></span
+                    >
+                </div>
+
+                <!-- Blinking cursor -->
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="text-[#00ff41]">root@kbm</span>
+                    <span class="text-[#444d56]">:</span>
+                    <span class="text-[#4fc3f7]">~/blog</span>
+                    <span class="text-[#00ff41]">$</span>
+                    <span
+                        class="inline-block w-[0.55em] h-[1.1em] bg-[#00ff41] align-middle"
+                        style="animation: blink 1s step-end infinite;"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Below-terminal nav -->
+        <div class="mt-10 text-center space-y-4">
+            <h1 class="text-xl font-bold font-mono text-[#c9d1d9]">
+                <span class="text-[#ff3c3c]">[ERR]</span>
+                Target not found on this host.
+            </h1>
+            <p class="text-[#6e7681] text-sm font-mono">
+                The resource you requested does not exist or has been moved.
+            </p>
+
+            <div class="flex flex-wrap gap-3 justify-center pt-2">
+                <a
+                    href={base}
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-mono font-semibold
+                 bg-[#00ff41]/10 text-[#00ff41] border border-[#00ff41]/30 rounded
+                 hover:bg-[#00ff41]/15 hover:border-[#00ff41]/60 transition-all duration-200"
+                >
+                    <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    back to blog
+                </a>
+
+                <a
+                    href={`${base}tags`}
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-mono
+                 text-[#6e7681] border border-[#1c1c1c] rounded
+                 hover:text-[#c9d1d9] hover:border-[#2a2a2a] transition-all duration-200"
+                >
+                    browse all tags
+                    <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</BaseLayout>

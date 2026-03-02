@@ -1,0 +1,398 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import {
+  sortPostsByDate,
+  filterPublished,
+  getPostsByCategory,
+  getAllTags,
+  CATEGORY_META,
+  tagUrl,
+  categoryUrl,
+  postUrl,
+  formatDate,
+  calcReadingTime,
+  type Category,
+} from '../utils/content';
+
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+
+const allPosts   = await getCollection('posts');
+const published  = filterPublished(allPosts);
+const sorted     = sortPostsByDate(published);
+const recent     = sorted.slice(0, 6);
+const featured   = sorted[0];
+const topTags    = getAllTags(published).slice(0, 16);
+
+const categories = Object.entries(CATEGORY_META) as [Category, typeof CATEGORY_META[Category]][];
+const catCounts  = categories.map(([cat, meta]) => ({
+  cat,
+  meta,
+  count: getPostsByCategory(published, cat).length,
+}));
+
+const totalPosts  = published.length;
+const totalTags   = getAllTags(published).length;
+---
+
+<BaseLayout
+  title="r3d/ops — Red Team Knowledge Base | KBM Security Blog"
+  description="Offensive security tutorials, red team playbooks, scripts and techniques for authorized security professionals. MITRE ATT&CK aligned."
+>
+
+  <!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+  <section class="relative border-b border-[#1c1c1c] overflow-hidden">
+
+    <!-- Background grid pattern -->
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 opacity-[0.03]"
+      style="background-image: linear-gradient(#00ff41 1px, transparent 1px), linear-gradient(90deg, #00ff41 1px, transparent 1px); background-size: 40px 40px;"
+    ></div>
+
+    <!-- Radial glow -->
+    <div
+      aria-hidden="true"
+      class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] opacity-[0.07]"
+      style="background: radial-gradient(ellipse at center, #00ff41 0%, transparent 70%);"
+    ></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <div class="max-w-3xl">
+
+        <!-- Pre-title prompt -->
+        <div class="term-prompt text-xs mb-6 animate-fade-in-up">
+          <span class="host">root@kbm-security</span>
+          <span class="sep">:</span>
+          <span class="path">~/r3d/ops</span>
+          <span class="arrow">$</span>
+          <span class="text-[#c9d1d9]">cat mission.txt</span>
+        </div>
+
+        <!-- Main heading -->
+        <h1 class="font-mono font-bold leading-tight mb-4 animate-fade-in-up animate-delay-1">
+          <span class="text-[#ff3c3c] text-4xl sm:text-5xl md:text-6xl tracking-tight block">
+            r3d/ops
+          </span>
+          <span class="text-[#c9d1d9] text-lg sm:text-xl md:text-2xl font-normal mt-2 block">
+            Red Team Knowledge Base
+          </span>
+        </h1>
+
+        <!-- Description -->
+        <p class="text-[#6e7681] text-sm sm:text-base leading-relaxed mb-8 font-mono max-w-xl animate-fade-in-up animate-delay-2">
+          Offensive security tutorials, exploitation techniques, and red team
+          playbooks — aligned to MITRE ATT&amp;CK, built for authorized
+          engagements. By <a
+            href="https://www.kbmsecurity.com.br"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[#00ff41] hover:underline"
+          >KBM Security</a>.
+        </p>
+
+        <!-- CTA buttons -->
+        <div class="flex flex-wrap gap-3 mb-10 animate-fade-in-up animate-delay-3">
+          <a
+            href={base}
+            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-mono font-semibold
+                   bg-[#00ff41]/10 text-[#00ff41] border border-[#00ff41]/30 rounded
+                   hover:bg-[#00ff41]/15 hover:border-[#00ff41]/60
+                   transition-all duration-200"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            browse posts
+          </a>
+          <a
+            href="https://www.kbmsecurity.com.br"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-mono
+                   text-[#6e7681] border border-[#1c1c1c] rounded
+                   hover:text-[#c9d1d9] hover:border-[#2a2a2a]
+                   transition-all duration-200"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+            </svg>
+            kbmsecurity.com.br
+          </a>
+        </div>
+
+        <!-- Stats row -->
+        <div class="flex flex-wrap gap-6 text-xs font-mono animate-fade-in-up animate-delay-4">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#00ff41]"></span>
+            <span class="text-[#444d56]">posts:</span>
+            <span class="text-[#00ff41]">{totalPosts}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#4fc3f7]"></span>
+            <span class="text-[#444d56]">categories:</span>
+            <span class="text-[#4fc3f7]">{categories.length}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#c792ea]"></span>
+            <span class="text-[#444d56]">tags:</span>
+            <span class="text-[#c792ea]">{totalTags}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#ffd700]"></span>
+            <span class="text-[#444d56]">framework:</span>
+            <span class="text-[#ffd700]">astro + vite</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+  </section>
+
+  <!-- ── Category Grid ──────────────────────────────────────────────────────── -->
+  <section class="border-b border-[#1c1c1c]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+      <h2 class="section-heading mb-6">attack categories</h2>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2">
+        {catCounts.map(({ cat, meta, count }, i) => (
+          <a
+            href={categoryUrl(base, cat)}
+            class:list={[
+              'group flex flex-col items-center gap-2 p-3 rounded border transition-all duration-200',
+              'border-[#1c1c1c] bg-[#111111] hover:border-[#2a2a2a]',
+              'animate-fade-in-up',
+            ]}
+            style={`animation-delay: ${i * 0.04}s; opacity: 0;`}
+            title={`${meta.label} — ${count} post${count !== 1 ? 's' : ''}`}
+          >
+            <span class="text-xl leading-none">{meta.icon}</span>
+            <span class:list={['text-[0.65rem] font-mono font-semibold tracking-wide uppercase', meta.color]}>
+              {meta.label}
+            </span>
+            <span class="text-[0.6rem] text-[#444d56] font-mono">
+              {count} post{count !== 1 ? 's' : ''}
+            </span>
+          </a>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Featured Post ──────────────────────────────────────────────────────── -->
+  {featured && (
+    <section class="border-b border-[#1c1c1c]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <h2 class="section-heading mb-6">featured</h2>
+
+        <a
+          href={postUrl(base, featured.slug)}
+          class="group block relative overflow-hidden rounded-lg border border-[#1c1c1c]
+                 bg-[#111111] hover:border-[#2a2a2a] transition-all duration-300
+                 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,255,65,0.05)]"
+        >
+          <!-- Top accent -->
+          <div
+            class:list={[
+              'absolute top-0 left-0 right-0 h-[2px] transition-all duration-300',
+              featured.data.category === 'privesc'     ? 'bg-[#ff3c3c]' :
+              featured.data.category === 'recon'       ? 'bg-[#4fc3f7]' :
+              featured.data.category === 'lateral'     ? 'bg-[#c792ea]' :
+              featured.data.category === 'persistence' ? 'bg-[#ffd700]' :
+              featured.data.category === 'evasion'     ? 'bg-[#00ff41]' :
+              featured.data.category === 'web'         ? 'bg-[#26c6da]' :
+              featured.data.category === 'exfil'       ? 'bg-[#ff9800]' :
+                                                         'bg-[#82b1ff]',
+            ]}
+          />
+
+          <div class="p-6 md:p-8">
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+              <span class:list={[
+                'tag-badge font-mono text-[0.65rem] tracking-widest uppercase',
+                `cat-${featured.data.category}`,
+              ]}>
+                {CATEGORY_META[featured.data.category].icon}
+                &nbsp;{CATEGORY_META[featured.data.category].label}
+              </span>
+              <span class:list={['tag-badge text-[0.65rem] font-mono', `badge-${featured.data.difficulty}`]}>
+                {featured.data.difficulty}
+              </span>
+              {featured.data.os.map((o) => (
+                <span class="os-badge">{o}</span>
+              ))}
+              <span class="ml-auto text-[0.65rem] font-mono text-[#444d56]">
+                FEATURED
+              </span>
+            </div>
+
+            <h3 class="text-xl md:text-2xl lg:text-3xl font-bold font-mono text-[#c9d1d9]
+                       group-hover:text-[#00ff41] transition-colors duration-200 mb-3">
+              {featured.data.title}
+            </h3>
+
+            <p class="text-[#6e7681] text-sm leading-relaxed mb-4 max-w-2xl font-mono">
+              {featured.data.description}
+            </p>
+
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.7rem] font-mono text-[#444d56]">
+              <time datetime={featured.data.date.toISOString()}>
+                {formatDate(featured.data.date)}
+              </time>
+              <span>
+                {featured.data.readingTime ?? calcReadingTime(featured.body)} min read
+              </span>
+              <span class="ml-auto flex items-center gap-1.5 text-[#6e7681] group-hover:text-[#00ff41] transition-colors">
+                read post
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+  )}
+
+  <!-- ── Recent Posts ───────────────────────────────────────────────────────── -->
+  <section class="border-b border-[#1c1c1c]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h2 class="section-heading flex-1">recent posts</h2>
+        <span class="text-[0.65rem] font-mono text-[#444d56]">
+          {sorted.length} total
+        </span>
+      </div>
+
+      {sorted.length === 0 ? (
+        <!-- Empty state -->
+        <div class="py-16 text-center font-mono">
+          <p class="text-[#444d56] text-sm mb-2">// no posts published yet</p>
+          <p class="text-[#6e7681] text-xs">content coming soon</p>
+        </div>
+      ) : (
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {recent.map((post, i) => (
+            <div
+              class="animate-fade-in-up"
+              style={`animation-delay: ${i * 0.06}s; opacity: 0;`}
+            >
+              <PostCard post={post} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <!-- View all button -->
+      {sorted.length > 6 && (
+        <div class="mt-8 text-center">
+          <a
+            href={base}
+            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-mono
+                   text-[#6e7681] border border-[#1c1c1c] rounded
+                   hover:text-[#00ff41] hover:border-[#00ff41]/30
+                   transition-all duration-200"
+          >
+            view all {sorted.length} posts
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      )}
+
+    </div>
+  </section>
+
+  <!-- ── Tag Cloud ──────────────────────────────────────────────────────────── -->
+  {topTags.length > 0 && (
+    <section class="border-b border-[#1c1c1c]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <h2 class="section-heading mb-6">tags</h2>
+
+        <div class="flex flex-wrap gap-2">
+          {topTags.map(({ tag, count }) => (
+            <a
+              href={tagUrl(base, tag)}
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border text-xs font-mono
+                     text-[#6e7681] border-[#1c1c1c] bg-[#111111]
+                     hover:text-[#00ff41] hover:border-[#00ff41]/30 hover:bg-[#00ff41]/5
+                     transition-all duration-150"
+            >
+              #{tag}
+              <span class="text-[0.6rem] text-[#444d56]">{count}</span>
+            </a>
+          ))}
+        </div>
+
+      </div>
+    </section>
+  )}
+
+  <!-- ── Bottom CTA ─────────────────────────────────────────────────────────── -->
+  <section>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+
+      <div class="max-w-lg mx-auto">
+        <!-- Terminal prompt -->
+        <div class="term-prompt text-xs justify-center mb-4">
+          <span class="host">root@kbm-security</span>
+          <span class="sep">:</span>
+          <span class="path">~/r3d/ops</span>
+          <span class="arrow">$</span>
+          <span class="text-[#c9d1d9]">./contact.sh</span>
+        </div>
+
+        <h2 class="text-xl md:text-2xl font-bold font-mono text-[#c9d1d9] mb-3">
+          Need a Red Team engagement?
+        </h2>
+        <p class="text-[#6e7681] text-sm leading-relaxed mb-6 font-mono">
+          KBM Security provides professional red team operations,
+          penetration testing, and adversary simulation services.
+        </p>
+
+        <a
+          href="https://www.kbmsecurity.com.br"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-6 py-3 text-sm font-mono font-semibold
+                 bg-[#ff3c3c]/10 text-[#ff3c3c] border border-[#ff3c3c]/30 rounded
+                 hover:bg-[#ff3c3c]/15 hover:border-[#ff3c3c]/60
+                 transition-all duration-200"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+          </svg>
+          kbmsecurity.com.br
+        </a>
+
+        <!-- RSS hint -->
+        <p class="mt-6 text-[0.65rem] text-[#444d56] font-mono">
+          Subscribe via{' '}
+          <a href={`${base}feed.xml`} class="text-[#6e7681] hover:text-[#00ff41] transition-colors underline">
+            RSS feed
+          </a>
+          {' '}— stay updated on new techniques.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>

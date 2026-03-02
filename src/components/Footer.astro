@@ -1,0 +1,304 @@
+---
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+
+const year = new Date().getFullYear();
+
+const categories = [
+    { label: "recon", href: `${base}tags/recon` },
+    { label: "privesc", href: `${base}tags/privesc` },
+    { label: "lateral", href: `${base}tags/lateral` },
+    { label: "evasion", href: `${base}tags/evasion` },
+    { label: "persistence", href: `${base}tags/persistence` },
+    { label: "exfil", href: `${base}tags/exfil` },
+    { label: "web", href: `${base}tags/web` },
+    { label: "cloud", href: `${base}tags/cloud` },
+];
+
+const resources = [
+    { label: "All Posts", href: base },
+    { label: "RSS Feed", href: `${base}feed.xml` },
+    { label: "sitemap.xml", href: `${base}sitemap-index.xml` },
+];
+
+const external = [
+    { label: "kbmsecurity.com.br", href: "https://www.kbmsecurity.com.br" },
+    { label: "MITRE ATT&CK", href: "https://attack.mitre.org" },
+    { label: "GTFOBins", href: "https://gtfobins.github.io" },
+    { label: "HackTricks", href: "https://book.hacktricks.xyz" },
+    {
+        label: "PayloadsAllTheThings",
+        href: "https://github.com/swisskyrepo/PayloadsAllTheThings",
+    },
+];
+---
+
+<footer class="mt-24 border-t border-[#1c1c1c]">
+    <!-- Disclaimer bar -->
+    <div class="bg-[#ff3c3c]/5 border-b border-[#ff3c3c]/20 px-4 py-2">
+        <p
+            class="max-w-7xl mx-auto text-center text-[0.65rem] text-[#ff3c3c]/80 font-mono tracking-wide"
+        >
+            ⚠ FOR AUTHORIZED USE ONLY — All content is intended for security
+            professionals in authorized engagements, CTFs, and educational lab
+            environments. Unauthorized use is illegal.
+        </p>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <!-- Brand column -->
+            <div class="lg:col-span-1">
+                <a
+                    href={base}
+                    class="inline-flex items-center gap-2 group mb-4"
+                >
+                    <span
+                        class="text-[#ff3c3c] font-bold text-sm tracking-widest group-hover:animate-[glitch_0.3s_ease-in-out]"
+                    >
+                        r3d/ops
+                    </span>
+                    <span class="text-[#444d56] text-xs">by</span>
+                    <span
+                        class="text-[#6e7681] text-xs tracking-wider group-hover:text-[#00ff41] transition-colors"
+                    >
+                        KBM
+                    </span>
+                </a>
+                <p class="text-[#444d56] text-xs leading-relaxed mb-5">
+                    Red Team Knowledge Base.<br />
+                    Tutorials, scripts &amp; playbooks for<br />
+                    authorized offensive security ops.
+                </p>
+
+                <!-- Terminal-style status -->
+                <div class="font-mono text-[0.65rem] space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="w-1.5 h-1.5 rounded-full bg-[#00ff41] inline-block"
+                        ></span>
+                        <span class="text-[#6e7681]"
+                            >status: <span class="text-[#00ff41]"
+                                >operational</span
+                            ></span
+                        >
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="w-1.5 h-1.5 rounded-full bg-[#4fc3f7] inline-block"
+                        ></span>
+                        <span class="text-[#6e7681]"
+                            >framework: <span class="text-[#4fc3f7]"
+                                >astro + vite</span
+                            ></span
+                        >
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="w-1.5 h-1.5 rounded-full bg-[#ffd700] inline-block"
+                        ></span>
+                        <span class="text-[#6e7681]"
+                            >host: <span class="text-[#ffd700]"
+                                >github pages</span
+                            ></span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div>
+                <h3 class="section-heading mb-4">categories</h3>
+                <ul class="space-y-2">
+                    {
+                        categories.map(({ label, href }) => (
+                            <li>
+                                <a
+                                    href={href}
+                                    class="text-[#6e7681] hover:text-[#00ff41] transition-colors text-xs font-mono flex items-center gap-1.5 group"
+                                >
+                                    <span class="text-[#444d56] group-hover:text-[#00ff41] transition-colors">
+                                        ›
+                                    </span>
+                                    {label}
+                                </a>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div>
+                <h3 class="section-heading mb-4">resources</h3>
+                <ul class="space-y-2">
+                    {
+                        resources.map(({ label, href }) => (
+                            <li>
+                                <a
+                                    href={href}
+                                    class="text-[#6e7681] hover:text-[#00ff41] transition-colors text-xs font-mono flex items-center gap-1.5 group"
+                                >
+                                    <span class="text-[#444d56] group-hover:text-[#00ff41] transition-colors">
+                                        ›
+                                    </span>
+                                    {label}
+                                </a>
+                            </li>
+                        ))
+                    }
+                </ul>
+
+                <h3 class="section-heading mt-6 mb-4">external</h3>
+                <ul class="space-y-2">
+                    {
+                        external.map(({ label, href }) => (
+                            <li>
+                                <a
+                                    href={href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-[#6e7681] hover:text-[#4fc3f7] transition-colors text-xs font-mono flex items-center gap-1.5 group"
+                                >
+                                    <span class="text-[#444d56] group-hover:text-[#4fc3f7] transition-colors">
+                                        ↗
+                                    </span>
+                                    {label}
+                                </a>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </div>
+
+            <!-- Contact / Social -->
+            <div>
+                <h3 class="section-heading mb-4">contact</h3>
+
+                <div class="space-y-3">
+                    <a
+                        href="https://www.kbmsecurity.com.br"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex items-start gap-3 group"
+                    >
+                        <span
+                            class="text-[#00ff41] text-xs mt-0.5 opacity-60 group-hover:opacity-100 transition-opacity"
+                            >●</span
+                        >
+                        <div>
+                            <p
+                                class="text-[#6e7681] text-[0.65rem] uppercase tracking-widest mb-0.5"
+                            >
+                                Website
+                            </p>
+                            <p
+                                class="text-[#c9d1d9] text-xs group-hover:text-[#00ff41] transition-colors"
+                            >
+                                kbmsecurity.com.br
+                            </p>
+                        </div>
+                    </a>
+
+                    <a
+                        href="mailto:redteam@kbmsecurity.com.br"
+                        class="flex items-start gap-3 group"
+                    >
+                        <span
+                            class="text-[#00ff41] text-xs mt-0.5 opacity-60 group-hover:opacity-100 transition-opacity"
+                            >●</span
+                        >
+                        <div>
+                            <p
+                                class="text-[#6e7681] text-[0.65rem] uppercase tracking-widest mb-0.5"
+                            >
+                                Email
+                            </p>
+                            <p
+                                class="text-[#c9d1d9] text-xs group-hover:text-[#00ff41] transition-colors break-all"
+                            >
+                                redteam@kbmsecurity.com.br
+                            </p>
+                        </div>
+                    </a>
+
+                    <a
+                        href="https://www.linkedin.com/company/kbmsecurity"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex items-start gap-3 group"
+                    >
+                        <span
+                            class="text-[#00ff41] text-xs mt-0.5 opacity-60 group-hover:opacity-100 transition-opacity"
+                            >●</span
+                        >
+                        <div>
+                            <p
+                                class="text-[#6e7681] text-[0.65rem] uppercase tracking-widest mb-0.5"
+                            >
+                                LinkedIn
+                            </p>
+                            <p
+                                class="text-[#c9d1d9] text-xs group-hover:text-[#00ff41] transition-colors"
+                            >
+                                @kbmsecurity
+                            </p>
+                        </div>
+                    </a>
+
+                    <a
+                        href="https://www.instagram.com/kbmsecurity"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex items-start gap-3 group"
+                    >
+                        <span
+                            class="text-[#00ff41] text-xs mt-0.5 opacity-60 group-hover:opacity-100 transition-opacity"
+                            >●</span
+                        >
+                        <div>
+                            <p
+                                class="text-[#6e7681] text-[0.65rem] uppercase tracking-widest mb-0.5"
+                            >
+                                Instagram
+                            </p>
+                            <p
+                                class="text-[#c9d1d9] text-xs group-hover:text-[#00ff41] transition-colors"
+                            >
+                                @kbmsecurity
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom bar -->
+        <div
+            class="mt-12 pt-6 border-t border-[#1c1c1c] flex flex-col sm:flex-row items-center justify-between gap-3"
+        >
+            <p class="text-[#444d56] text-[0.65rem] font-mono">
+                © {year}
+                <a
+                    href="https://www.kbmsecurity.com.br"
+                    class="hover:text-[#6e7681] transition-colors"
+                    >KBM Security</a
+                >. All rights reserved.
+            </p>
+
+            <div
+                class="flex items-center gap-4 text-[0.65rem] font-mono text-[#444d56]"
+            >
+                <!-- Terminal prompt easter egg -->
+                <span class="hidden sm:inline">
+                    <span class="text-[#00ff41]">root@r3d-ops</span>
+                    <span class="text-[#6e7681]">:~# </span>
+                    <span class="text-[#c9d1d9]">stay curious</span>
+                    <span
+                        class="inline-block w-1.5 h-3 bg-[#00ff41] ml-0.5 animate-[blink_1s_step-end_infinite] align-middle"
+                    ></span>
+                </span>
+            </div>
+        </div>
+    </div>
+</footer>

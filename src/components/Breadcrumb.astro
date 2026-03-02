@@ -1,0 +1,61 @@
+---
+interface BreadcrumbItem {
+    label: string;
+    href?: string;
+}
+
+interface Props {
+    items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav
+    aria-label="Breadcrumb"
+    class="flex items-center gap-1.5 text-xs text-[var(--text-dim)] font-mono mb-6 overflow-x-auto whitespace-nowrap pb-1"
+>
+    <a
+        href={import.meta.env.BASE_URL.endsWith("/")
+            ? import.meta.env.BASE_URL
+            : `${import.meta.env.BASE_URL}/`}
+        class="hover:text-[var(--green)] transition-colors duration-150 shrink-0"
+        aria-label="Home"
+    >
+        ~
+    </a>
+
+    {
+        items.map((item, index) => (
+            <>
+                <span
+                    class="text-[var(--text-dim)] shrink-0"
+                    aria-hidden="true"
+                >
+                    /
+                </span>
+                {item.href && index < items.length - 1 ? (
+                    <a
+                        href={item.href}
+                        class="hover:text-[var(--green)] transition-colors duration-150 shrink-0 capitalize"
+                    >
+                        {item.label}
+                    </a>
+                ) : (
+                    <span
+                        class={
+                            index === items.length - 1
+                                ? "text-[var(--text-muted)] shrink-0"
+                                : "shrink-0 capitalize"
+                        }
+                        aria-current={
+                            index === items.length - 1 ? "page" : undefined
+                        }
+                    >
+                        {item.label}
+                    </span>
+                )}
+            </>
+        ))
+    }
+</nav>

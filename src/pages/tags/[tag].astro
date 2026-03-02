@@ -1,0 +1,318 @@
+---
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import {
+  filterPublished,
+  sortPostsByDate,
+  getAllTags,
+  getPostsByTag,
+  CATEGORY_META,
+  DIFFICULTY_META,
+  type Category,
+  type Difficulty,
+} from '../../utils/content';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const allPosts    = await getCollection('posts');
+  const published   = filterPublished(allPosts);
+  const allTagObjs  = getAllTags(published);
+
+  // Also include all categories as valid tag routes
+  const categories = Object.keys(CATEGORY_META) as Category[];
+
+  const tagSet = new Set([
+    ...allTagObjs.map((t) => t.tag),
+    ...categories,
+  ]);
+
+  return [...tagSet].map((tag) => ({
+    params: { tag },
+    props:  { tag, allPosts: published },
+  }));
+};
+
+interface Props {
+  tag:      string;
+  allPosts: Awaited<ReturnType<typeof getCollection<'posts'>>>;
+}
+
+const { tag, allPosts } = Astro.props;
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+
+// Posts matching this tag OR category
+const matchedPosts = sortPostsByDate(
+  allPosts.filter(
+    (p) => p.data.tags.includes(tag) || p.data.category === tag
+  )
+);
+
+// Determine if this tag is actually a category
+const isCategory   = tag in CATEGORY_META;
+const catMeta      = isCategory ? CATEGORY_META[tag as Category] : null;
+
+// All tags present across matched posts (for related tags sidebar)
+const relatedTags = getAllTags(matchedPosts)
+  .filter((t) => t.tag !== tag)
+  .slice(0, 12);
+
+// Difficulty distribution
+const diffCount: Record<Difficulty, number> = {
+  easy: 0, medium: 0, hard: 0, expert: 0,
+};
+matchedPosts.forEach((p) => {
+  diffCount[p.data.difficulty] = (diffCount[p.data.difficulty] ?? 0) + 1;
+});
+
+// OS distribution
+const osCount: Record<string, number> = {};
+matchedPosts.forEach((p) => {
+  p.data.os.forEach((o) => {
+    osCount[o] = (osCount[o] ?? 0) + 1;
+  });
+});
+
+const pageTitle = isCategory
+  ? `${catMeta!.label} — r3d/ops`
+  : `#${tag} — r3d/ops`;
+
+const pageDesc = isCategory
+  ? `Offensive security techniques and tutorials for ${catMeta!.label}. ${matchedPosts.length} posts.`
+  : `All r3d/ops posts tagged #${tag}. ${matchedPosts.length} results.`;
+
+const breadcrumbs = [
+  { label: 'blog', href: base },
+  { label: 'tags', href: `${base}tags` },
+  { label: tag },
+];
+
+// All unique categories in result set
+const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
+---
+
+<BaseLayout title={pageTitle} description={pageDesc}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ── Breadcrumb ────────────────────────────────────────────────────── -->
+    <Breadcrumb items={breadcrumbs} />
+
+    <div class="flex gap-10 xl:gap-14">
+
+      <!-- ── Main column ──────────────────────────────────────────────────── -->
+      <div class="flex-1 min-w-0">
+
+        <!-- ── Page header ────────────────────────────────────────────────── -->
+        <header class="mb-8 animate-fade-in-up">
+
+          <!-- Label row -->
+          <div class="flex flex-wrap items-center gap-3 mb-4">
+            {isCategory ? (
+              <span
+                class:list={[
+                  'tag-badge font-mono text-sm tracking-widest uppercase px-3 py-1',
+                  `cat-${tag}`,
+                ]}
+              >
+                <span class="mr-1.5 text-base">{catMeta!.icon}</span>
+                {catMeta!.label}
+              </span>
+            ) : (
+              <span class="tag-badge font-mono text-sm tracking-wide text-[var(--blue)] bg-[var(--blue)]/10 border border-[var(--blue)]/30 px-3 py-1">
+                #{tag}
+              </span>
+            )}
+
+            <span class="text-[var(--text-dim)] text-sm font-mono">
+              {matchedPosts.length} post{matchedPosts.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          <!-- Title -->
+          <h1 class="text-2xl sm:text-3xl font-bold font-mono text-[var(--text)] mb-3">
+            <span class="text-[var(--text-dim)] font-normal">
+              {isCategory ? '/ category / ' : '/ tag / '}
+            </span>
+            <span class={isCategory ? catMeta!.color : 'text-[var(--blue)]'}>
+              {tag}
+            </span>
+          </h1>
+
+          <!-- Description -->
+          <p class="text-[var(--text-muted)] text-sm font-mono leading-relaxed max-w-2xl">
+            {isCategory
+              ? `Techniques, methodologies, and tooling for ${catMeta!.label.toLowerCase()} operations.`
+              : `All posts and techniques tagged with #${tag}.`}
+          </p>
+
+          <!-- Stats bar -->
+          {matchedPosts.length > 0 && (
+            <div class="mt-5 flex flex-wrap gap-3">
+              {Object.entries(diffCount)
+                .filter(([, count]) => count > 0)
+                .map(([diff, count]) => {
+                  const meta = DIFFICULTY_META[diff as Difficulty];
+                  return (
+                    <div class="flex items-center gap-1.5 text-[0.7rem] font-mono">
+                      <span class:list={['tag-badge', `badge-${diff}`]}>
+                        {meta.label}
+                      </span>
+                      <span class="text-[var(--text-dim)]">×{count}</span>
+                    </div>
+                  );
+                })}
+
+              <div class="w-px bg-[var(--border)] self-stretch mx-1 hidden sm:block" />
+
+              {Object.entries(osCount).map(([os, count]) => (
+                <span class="text-[0.7rem] font-mono text-[var(--text-dim)] flex items-center gap-1">
+                  <span class="os-badge">{os}</span>
+                  <span>×{count}</span>
+                </span>
+              ))}
+            </div>
+          )}
+        </header>
+
+        <!-- ── Filter bar (categories within results) ─────────────────────── -->
+        {!isCategory && categoriesInSet.length > 1 && (
+          <div class="mb-6 flex flex-wrap items-center gap-2 p-3 bg-[var(--bg-card)]
+                      border border-[var(--border)] rounded-lg">
+            <span class="text-[0.65rem] text-[var(--text-dim)] font-mono uppercase tracking-widest mr-1">
+              filter:
+            </span>
+            {categoriesInSet.map((cat) => {
+              const meta = CATEGORY_META[cat];
+              return (
+                <a
+                  href={`${base}tags/${cat}`}
+                  class:list={[
+                    'tag-badge font-mono text-[0.65rem] tracking-wide',
+                    `cat-${cat}`,
+                  ]}
+                >
+                  {meta.icon} {meta.label}
+                </a>
+              );
+            })}
+          </div>
+        )}
+
+        <!-- ── Posts grid ──────────────────────────────────────────────────── -->
+        {matchedPosts.length > 0 ? (
+          <div class="grid grid-cols-1 gap-4">
+            {matchedPosts.map((post, i) => (
+              <div
+                class="animate-fade-in-up"
+                style={`animation-delay: ${i * 0.05}s; opacity: 0; animation-fill-mode: forwards;`}
+              >
+                <PostCard post={post} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <!-- Empty state -->
+          <div class="flex flex-col items-center justify-center py-20 text-center">
+            <div class="text-[var(--text-dim)] font-mono mb-4 text-4xl opacity-30">
+              //
+            </div>
+            <p class="text-[var(--text-muted)] font-mono text-sm mb-1">
+              no posts found for &ldquo;{tag}&rdquo;
+            </p>
+            <p class="text-[var(--text-dim)] font-mono text-xs mb-6">
+              check back later or explore other categories
+            </p>
+            <a
+              href={base}
+              class="inline-flex items-center gap-2 px-4 py-2 text-sm font-mono
+                     text-[var(--text-muted)] border border-[var(--border)] rounded
+                     hover:text-[var(--green)] hover:border-[var(--green)]/30
+                     transition-all duration-150"
+            >
+              ← all posts
+            </a>
+          </div>
+        )}
+
+      </div>
+
+      <!-- ── Right sidebar ───────────────────────────────────────────────── -->
+      <aside class="hidden lg:flex flex-col gap-4 w-56 xl:w-64 shrink-0">
+
+        <!-- All categories -->
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4">
+          <h2 class="section-heading mb-4">categories</h2>
+          <nav class="space-y-1">
+            {(Object.entries(CATEGORY_META) as [Category, typeof CATEGORY_META[Category]][]).map(([key, meta]) => {
+              const count = filterPublished(allPosts).filter(
+                (p) => p.data.category === key
+              ).length;
+              const isActive = tag === key;
+              return (
+                <a
+                  href={`${base}tags/${key}`}
+                  class:list={[
+                    'flex items-center justify-between px-2.5 py-1.5 rounded text-xs font-mono transition-all duration-150',
+                    isActive
+                      ? `${meta.color} ${meta.bg} border ${meta.border}`
+                      : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-raised)] border border-transparent',
+                  ]}
+                >
+                  <span class="flex items-center gap-1.5">
+                    <span>{meta.icon}</span>
+                    {meta.label}
+                  </span>
+                  <span class="text-[var(--text-dim)] text-[0.6rem]">{count}</span>
+                </a>
+              );
+            })}
+          </nav>
+        </div>
+
+        <!-- Related tags -->
+        {relatedTags.length > 0 && (
+          <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4">
+            <h2 class="section-heading mb-4">related tags</h2>
+            <div class="flex flex-wrap gap-1.5">
+              {relatedTags.map(({ tag: t, count }) => (
+                <a
+                  href={`${base}tags/${t}`}
+                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[0.65rem] font-mono
+                         text-[var(--text-dim)] bg-[var(--bg-raised)] border border-[var(--border)]
+                         hover:text-[var(--green)] hover:border-[var(--green)]/30
+                         transition-colors duration-150"
+                  title={`${count} post${count !== 1 ? 's' : ''}`}
+                >
+                  #{t}
+                  <span class="text-[var(--text-dim)] text-[0.55rem]">{count}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Difficulty legend -->
+        <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4">
+          <h2 class="section-heading mb-4">difficulty</h2>
+          <div class="space-y-2">
+            {(Object.entries(DIFFICULTY_META) as [Difficulty, typeof DIFFICULTY_META[Difficulty]][]).map(([key, meta]) => {
+              const count = matchedPosts.filter((p) => p.data.difficulty === key).length;
+              if (count === 0) return null;
+              return (
+                <div class="flex items-center justify-between">
+                  <span class:list={['tag-badge', `badge-${key}`]}>
+                    {meta.label}
+                  </span>
+                  <span class="text-[var(--text-dim)] text-[0.65rem] font-mono">{count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,719 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+import PostCard from "../components/PostCard.astro";
+import TOC from "../components/TOC.tsx";
+import {
+    formatDate,
+    formatDateFull,
+    calcReadingTime,
+    getRelatedPosts,
+    postUrl,
+    tagUrl,
+    categoryUrl,
+    CATEGORY_META,
+    DIFFICULTY_META,
+    OS_META,
+    getMitreTacticName,
+    getMitreUrl,
+} from "../utils/content";
+
+interface Props {
+    post: CollectionEntry<"posts">;
+    allPosts: CollectionEntry<"posts">[];
+    headings: { depth: number; slug: string; text: string }[];
+}
+
+const { post, allPosts, headings } = Astro.props;
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+
+const {
+    title,
+    date,
+    description,
+    category,
+    os,
+    difficulty,
+    tags,
+    mitre_tactic,
+    mitre_technique,
+} = post.data;
+
+const readingTime = post.data.readingTime ?? calcReadingTime(post.body);
+const catMeta = CATEGORY_META[category];
+const diffMeta = DIFFICULTY_META[difficulty];
+const related = getRelatedPosts(post, allPosts, 3);
+
+const breadcrumbs = [
+    { label: "blog", href: base },
+    { label: category, href: categoryUrl(base, category) },
+    { label: title },
+];
+---
+
+<BaseLayout
+    title={`${title} — r3d/ops`}
+    description={description}
+    type="article"
+    publishDate={date}
+>
+    <!--
+    Reading progress bar.
+    Uses CSS Scroll-Driven Animations (Chrome 115+) — zero JS, no scroll-linked warning.
+    Falls back to rAF-gated `transform: scaleX()` on other browsers.
+    `transform` is compositor-only so it never causes layout thrash even in the JS path.
+  -->
+    <div id="reading-progress" aria-hidden="true"></div>
+
+    <style>
+        #reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--green);
+            transform: scaleX(0);
+            transform-origin: left center;
+            z-index: 9999;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        /* ── CSS Scroll-Driven Animation (Chrome 115+, Safari 18+) ───────── */
+        @keyframes reading-progress-anim {
+            from {
+                transform: scaleX(0);
+            }
+            to {
+                transform: scaleX(1);
+            }
+        }
+
+        @supports (animation-timeline: scroll()) {
+            #reading-progress {
+                animation: reading-progress-anim linear both;
+                animation-timeline: scroll(root block);
+            }
+        }
+    </style>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- ── Breadcrumb ──────────────────────────────────────────────────── -->
+        <Breadcrumb items={breadcrumbs} />
+
+        <div class="flex gap-10 xl:gap-14">
+            <!-- ── Main column ────────────────────────────────────────────────── -->
+            <article class="flex-1 min-w-0">
+                <!-- ── Post header ──────────────────────────────────────────────── -->
+                <header class="mb-10 animate-fade-in-up">
+                    <!-- Badges row -->
+                    <div class="flex flex-wrap items-center gap-2 mb-4">
+                        <!-- Category -->
+                        <a
+                            href={categoryUrl(base, category)}
+                            class:list={[
+                                "tag-badge font-mono text-[0.65rem] tracking-widest uppercase",
+                                `cat-${category}`,
+                            ]}
+                        >
+                            <span class="mr-1 opacity-70">{catMeta.icon}</span>
+                            {catMeta.label}
+                        </a>
+
+                        <!-- Difficulty -->
+                        <span
+                            class:list={[
+                                "tag-badge font-mono text-[0.65rem]",
+                                `badge-${difficulty}`,
+                            ]}
+                        >
+                            {diffMeta.label}
+                        </span>
+
+                        <!-- OS targets -->
+                        {
+                            os.map((o) => (
+                                <span class="os-badge">
+                                    {OS_META[o].icon}&nbsp;{OS_META[o].label}
+                                </span>
+                            ))
+                        }
+
+                        <!-- MITRE tactic -->
+                        {
+                            mitre_tactic && (
+                                <a
+                                    href={`https://attack.mitre.org/tactics/${mitre_tactic}/`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="ml-auto inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[0.65rem]
+                       font-mono text-[var(--text-dim)] border border-[var(--border)]
+                       hover:text-[var(--yellow)] hover:border-[var(--yellow)]/30
+                       transition-colors duration-150"
+                                    title="View on MITRE ATT&CK"
+                                >
+                                    <svg
+                                        class="w-3 h-3"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                                        />
+                                    </svg>
+                                    {getMitreTacticName(mitre_tactic)}
+                                    {mitre_technique && ` · ${mitre_technique}`}
+                                </a>
+                            )
+                        }
+                    </div>
+
+                    <!-- Title -->
+                    <h1
+                        class="text-2xl sm:text-3xl md:text-4xl font-bold font-mono leading-tight
+                     text-[var(--text)] mb-4"
+                    >
+                        <span
+                            class="text-[var(--text-dim)] font-normal text-xl sm:text-2xl"
+                            >#
+                        </span>
+                        {title}
+                    </h1>
+
+                    <!-- Description -->
+                    <p
+                        class="text-[var(--text-muted)] text-base leading-relaxed mb-5 font-mono max-w-2xl"
+                    >
+                        {description}
+                    </p>
+
+                    <!-- Meta row -->
+                    <div
+                        class="flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.75rem] font-mono
+                      text-[var(--text-dim)] pb-5 border-b border-[var(--border)]"
+                    >
+                        <!-- Terminal prompt style -->
+                        <span class="term-prompt">
+                            <span class="host">root@kbm</span>
+                            <span class="sep">:</span>
+                            <span class="path">~/{category}</span>
+                            <span class="arrow">$</span>
+                        </span>
+
+                        <!-- Date -->
+                        <time
+                            datetime={date.toISOString()}
+                            title={formatDateFull(date)}
+                            class="flex items-center gap-1.5"
+                        >
+                            <svg
+                                class="w-3.5 h-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                ></path>
+                            </svg>
+                            {formatDate(date)}
+                        </time>
+
+                        <!-- Reading time -->
+                        <span class="flex items-center gap-1.5">
+                            <svg
+                                class="w-3.5 h-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                ></path>
+                            </svg>
+                            {readingTime} min read
+                        </span>
+
+                        <!-- Post path hint -->
+                        <span
+                            class="hidden md:flex items-center gap-1.5 opacity-50"
+                        >
+                            <svg
+                                class="w-3.5 h-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                ></path>
+                            </svg>
+                            /post/{post.slug}
+                        </span>
+                    </div>
+
+                    <!-- Tags -->
+                    {
+                        tags.length > 0 && (
+                            <div class="flex flex-wrap gap-1.5 pt-4">
+                                {tags.map((tag) => (
+                                    <a
+                                        href={tagUrl(base, tag)}
+                                        class="inline-flex items-center px-2.5 py-1 rounded text-[0.68rem] font-mono
+                         text-[var(--text-dim)] bg-[var(--bg-raised)] border border-[var(--border)]
+                         hover:text-[var(--green)] hover:border-[var(--green)]/30
+                         transition-colors duration-150"
+                                    >
+                                        #{tag}
+                                    </a>
+                                ))}
+                            </div>
+                        )
+                    }
+                </header>
+
+                <!-- ── MITRE callout (if technique provided) ──────────────────────── -->
+                {
+                    (mitre_tactic || mitre_technique) && (
+                        <div
+                            class="mb-8 p-4 rounded border border-[var(--yellow)]/20 bg-[var(--yellow)]/5
+                      flex items-start gap-3 text-sm font-mono animate-fade-in-up animate-delay-1"
+                        >
+                            <svg
+                                class="w-4 h-4 text-[var(--yellow)] shrink-0 mt-0.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                                />
+                            </svg>
+                            <div class="flex-1">
+                                <span class="text-[var(--yellow)] font-semibold text-xs uppercase tracking-widest">
+                                    MITRE ATT&amp;CK
+                                </span>
+                                <div class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[var(--text-muted)] text-xs">
+                                    {mitre_tactic && (
+                                        <span>
+                                            Tactic:{" "}
+                                            <a
+                                                href={`https://attack.mitre.org/tactics/${mitre_tactic}/`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="text-[var(--yellow)] hover:underline"
+                                            >
+                                                {mitre_tactic} —{" "}
+                                                {getMitreTacticName(
+                                                    mitre_tactic,
+                                                )}
+                                            </a>
+                                        </span>
+                                    )}
+                                    {mitre_technique && (
+                                        <span>
+                                            Technique:{" "}
+                                            <a
+                                                href={getMitreUrl(
+                                                    mitre_technique,
+                                                )}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="text-[var(--yellow)] hover:underline"
+                                            >
+                                                {mitre_technique}
+                                            </a>
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+
+                <!-- ── Article body ──────────────────────────────────────────────── -->
+                <div
+                    class="post-content animate-fade-in-up animate-delay-2"
+                    id="post-body"
+                >
+                    <slot />
+                </div>
+
+                <!-- ── Post footer ───────────────────────────────────────────────── -->
+                <footer class="mt-12 pt-8 border-t border-[var(--border)]">
+                    <!-- Tags again (bottom) -->
+                    {
+                        tags.length > 0 && (
+                            <div class="mb-8">
+                                <h3 class="section-heading mb-3">tags</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    {tags.map((tag) => (
+                                        <a
+                                            href={tagUrl(base, tag)}
+                                            class="inline-flex items-center px-3 py-1.5 rounded text-xs font-mono
+                           text-[var(--text-muted)] bg-[var(--bg-card)] border border-[var(--border)]
+                           hover:text-[var(--green)] hover:border-[var(--green)]/30
+                           transition-colors duration-150"
+                                        >
+                                            #{tag}
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )
+                    }
+
+                    <!-- Disclaimer -->
+                    <div
+                        class="mb-8 p-4 border border-[var(--red)]/20 rounded bg-[var(--red)]/5
+                      text-[0.72rem] font-mono text-[var(--text-muted)] leading-relaxed"
+                    >
+                        <span
+                            class="text-[var(--red)] font-semibold uppercase tracking-widest text-[0.65rem]"
+                        >
+                            ⚠ Legal Disclaimer
+                        </span>
+                        <p class="mt-1">
+                            This content is intended exclusively for security
+                            professionals operating in authorized environments
+                            (penetration tests, red team engagements, CTF
+                            competitions, or personal lab setups). Unauthorized
+                            use of these techniques against systems you do not
+                            own or have explicit written permission to test is
+                            illegal and unethical. KBM Security assumes no
+                            liability for misuse.
+                        </p>
+                    </div>
+
+                    <!-- Back / nav buttons -->
+                    <div
+                        class="flex items-center justify-between gap-4 flex-wrap"
+                    >
+                        <a
+                            href={base}
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-mono
+                     text-[var(--text-muted)] border border-[var(--border)] rounded
+                     hover:text-[var(--green)] hover:border-[var(--green)]/30
+                     transition-all duration-150"
+                        >
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            all posts
+                        </a>
+
+                        <a
+                            href={categoryUrl(base, category)}
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-mono
+                     text-[var(--text-muted)] border border-[var(--border)] rounded
+                     hover:text-[var(--green)] hover:border-[var(--green)]/30
+                     transition-all duration-150"
+                        >
+                            more {catMeta.label}
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </footer>
+
+                <!-- ── Related posts ─────────────────────────────────────────────── -->
+                {
+                    related.length > 0 && (
+                        <section
+                            class="mt-16"
+                            aria-labelledby="related-heading"
+                        >
+                            <h2
+                                id="related-heading"
+                                class="section-heading mb-6"
+                            >
+                                related posts
+                            </h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {related.map((relPost) => (
+                                    <PostCard post={relPost} />
+                                ))}
+                            </div>
+                        </section>
+                    )
+                }
+            </article>
+
+            <!-- ── Right sidebar: TOC ──────────────────────────────────────────── -->
+            <aside
+                class="hidden lg:block w-56 xl:w-64 shrink-0"
+                aria-label="Table of contents"
+            >
+                <div class="sticky top-20">
+                    <div
+                        class="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4"
+                    >
+                        <TOC headings={headings} client:idle />
+                    </div>
+
+                    <!-- Quick meta card -->
+                    <div
+                        class="mt-4 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4
+                      text-[0.72rem] font-mono space-y-2.5"
+                    >
+                        <div>
+                            <span
+                                class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
+                                >Category</span
+                            >
+                            <div class="mt-0.5 flex items-center gap-1.5">
+                                <span
+                                    class:list={[
+                                        "tag-badge",
+                                        `cat-${category}`,
+                                    ]}
+                                    style="font-size:0.65rem"
+                                >
+                                    {catMeta.icon}
+                                    {catMeta.label}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span
+                                class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
+                                >Difficulty</span
+                            >
+                            <div class="mt-0.5">
+                                <span
+                                    class:list={[
+                                        "tag-badge",
+                                        `badge-${difficulty}`,
+                                    ]}
+                                    style="font-size:0.65rem"
+                                >
+                                    {diffMeta.label}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span
+                                class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
+                                >Target OS</span
+                            >
+                            <div class="mt-0.5 flex flex-wrap gap-1">
+                                {
+                                    os.map((o) => (
+                                        <span class="os-badge">
+                                            {OS_META[o].icon} {OS_META[o].label}
+                                        </span>
+                                    ))
+                                }
+                            </div>
+                        </div>
+
+                        <div>
+                            <span
+                                class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
+                                >Read time</span
+                            >
+                            <div class="mt-0.5 text-[var(--text-muted)]">
+                                {readingTime} min
+                            </div>
+                        </div>
+
+                        <div>
+                            <span
+                                class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
+                                >Published</span
+                            >
+                            <div class="mt-0.5 text-[var(--text-muted)]">
+                                <time datetime={date.toISOString()}
+                                    >{formatDate(date)}</time
+                                >
+                            </div>
+                        </div>
+
+                        {
+                            mitre_tactic && (
+                                <div>
+                                    <span class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]">
+                                        MITRE
+                                    </span>
+                                    <div class="mt-0.5">
+                                        <a
+                                            href={`https://attack.mitre.org/tactics/${mitre_tactic}/`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="text-[var(--yellow)] hover:underline text-[0.68rem]"
+                                        >
+                                            {mitre_tactic}
+                                        </a>
+                                        {mitre_technique && (
+                                            <>
+                                                {" · "}
+                                                <a
+                                                    href={getMitreUrl(
+                                                        mitre_technique,
+                                                    )}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="text-[var(--yellow)] hover:underline text-[0.68rem]"
+                                                >
+                                                    {mitre_technique}
+                                                </a>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            )
+                        }
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</BaseLayout>
+
+<!-- ── Client scripts ──────────────────────────────────────────────────────── -->
+<script>
+    // ── Reading progress bar ────────────────────────────────────────────────────
+    // Only run the JS path when CSS Scroll-Driven Animations are NOT supported.
+    // This eliminates the Firefox "scroll-linked positioning effect" warning on
+    // browsers that do support it, and keeps the JS path lean via rAF gating.
+    if (!CSS.supports("animation-timeline: scroll()")) {
+        const bar = document.getElementById("reading-progress");
+        if (bar) {
+            let rafId = 0;
+
+            const update = () => {
+                rafId = 0;
+                const scrollY = window.scrollY;
+                const maxScroll =
+                    document.documentElement.scrollHeight - window.innerHeight;
+                const ratio = maxScroll > 0 ? scrollY / maxScroll : 0;
+                // scaleX is compositor-only — no layout recalculation, no scroll-linked warning
+                (bar as HTMLElement).style.transform = `scaleX(${ratio})`;
+            };
+
+            window.addEventListener(
+                "scroll",
+                () => {
+                    // Gate behind rAF so the update fires asynchronously, not synchronously
+                    // with the scroll event. This further reduces the chance of jank.
+                    if (!rafId) rafId = requestAnimationFrame(update);
+                },
+                { passive: true },
+            );
+
+            // Set initial value
+            update();
+        }
+    }
+</script>
+
+<script>
+    // ── Copy buttons for code blocks ────────────────────────────────────────────
+    document.querySelectorAll<HTMLElement>("#post-body pre").forEach((pre) => {
+        pre.style.position = "relative";
+
+        // Language label from class (shiki sets class="astro-code language-bash" etc.)
+        const classList = Array.from(pre.classList);
+        const langClass = classList.find((c) => c.startsWith("language-"));
+        const lang = langClass ? langClass.replace("language-", "") : null;
+
+        if (lang && lang !== "text") {
+            const label = document.createElement("span");
+            label.className = "lang-label";
+            label.textContent = lang;
+            pre.appendChild(label);
+        }
+
+        // Copy button
+        const btn = document.createElement("button");
+        btn.className = "copy-btn";
+        btn.textContent = "copy";
+        btn.setAttribute("aria-label", "Copy code to clipboard");
+        btn.setAttribute("type", "button");
+        pre.appendChild(btn);
+
+        btn.addEventListener("click", async () => {
+            const code = pre.querySelector("code")?.textContent ?? "";
+            try {
+                await navigator.clipboard.writeText(code);
+                btn.textContent = "✓ copied";
+                btn.classList.add("copied");
+                setTimeout(() => {
+                    btn.textContent = "copy";
+                    btn.classList.remove("copied");
+                }, 2000);
+            } catch {
+                btn.textContent = "failed";
+                setTimeout(() => {
+                    btn.textContent = "copy";
+                }, 2000);
+            }
+        });
+    });
+</script>
+
+<script>
+    // ── Auto-add anchor links to headings ──────────────────────────────────────
+    document
+        .querySelectorAll<HTMLElement>(
+            "#post-body h2, #post-body h3, #post-body h4",
+        )
+        .forEach((heading) => {
+            if (!heading.id) return;
+            const anchor = document.createElement("a");
+            anchor.href = `#${heading.id}`;
+            anchor.className = "heading-anchor";
+            anchor.setAttribute("aria-hidden", "true");
+            anchor.innerHTML =
+                ' <span style="color:var(--text-dim);font-weight:400;font-size:0.8em;opacity:0;transition:opacity 0.2s">#</span>';
+            heading.appendChild(anchor);
+            heading.addEventListener("mouseenter", () => {
+                (anchor.querySelector("span") as HTMLElement).style.opacity =
+                    "1";
+            });
+            heading.addEventListener("mouseleave", () => {
+                (anchor.querySelector("span") as HTMLElement).style.opacity =
+                    "0";
+            });
+        });
+</script>
