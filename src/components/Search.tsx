@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { create, insert, search as oramaSearch } from "@orama/orama";
+import {
+  create,
+  insert,
+  search as oramaSearch,
+  type AnyOrama,
+} from "@orama/orama";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -13,7 +18,7 @@ interface SearchEntry {
   slug: string;
 }
 
-type OramaDB = Awaited<ReturnType<typeof create>>;
+type OramaDB = AnyOrama;
 
 interface SearchProps {
   baseUrl: string;
