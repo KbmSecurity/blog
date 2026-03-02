@@ -8,7 +8,6 @@ export type Category =
   | "recon"
   | "privesc"
   | "lateral"
-  | "persistence"
   | "exfil"
   | "evasion"
   | "web"
@@ -76,13 +75,6 @@ export const CATEGORY_META: Record<
     bg: "bg-[#c792ea]/10",
     border: "border-[#c792ea]/30",
     icon: "↔",
-  },
-  persistence: {
-    label: "Persistence",
-    color: "text-[#ffd700]",
-    bg: "bg-[#ffd700]/10",
-    border: "border-[#ffd700]/30",
-    icon: "🔒",
   },
   exfil: {
     label: "Exfil",
@@ -260,7 +252,6 @@ export function getRelatedPosts(
 export const MITRE_TACTIC_NAMES: Record<string, string> = {
   TA0001: "Initial Access",
   TA0002: "Execution",
-  TA0003: "Persistence",
   TA0004: "Privilege Escalation",
   TA0005: "Defense Evasion",
   TA0006: "Credential Access",

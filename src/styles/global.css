@@ -284,11 +284,6 @@
         border-color: var(--purple);
         background: rgba(199, 146, 234, 0.08);
     }
-    .cat-persistence {
-        color: var(--yellow);
-        border-color: var(--yellow);
-        background: rgba(255, 215, 0, 0.08);
-    }
     .cat-exfil {
         color: var(--orange);
         border-color: var(--orange);

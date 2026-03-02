@@ -22,7 +22,6 @@ The **filename becomes the URL slug** — keep it lowercase, hyphen-separated, d
 | `recon/` | `/blog/tags/recon` | Reconnaissance, OSINT, footprinting |
 | `privesc/` | `/blog/tags/privesc` | Privilege escalation (Linux & Windows) |
 | `lateral/` | `/blog/tags/lateral` | Lateral movement, pivoting |
-| `persistence/` | `/blog/tags/persistence` | Backdoors, scheduled tasks, startup |
 | `exfil/` | `/blog/tags/exfil` | Data exfiltration techniques |
 | `evasion/` | `/blog/tags/evasion` | AV/EDR evasion, obfuscation |
 | `web/` | `/blog/tags/web` | Web exploitation, OWASP, APIs |
@@ -122,7 +121,6 @@ Must be **exactly one** of the following values:
 | `recon` | Reconnaissance & OSINT |
 | `privesc` | Privilege Escalation |
 | `lateral` | Lateral Movement |
-| `persistence` | Persistence mechanisms |
 | `exfil` | Exfiltration |
 | `evasion` | Defense Evasion |
 | `web` | Web Application attacks |
@@ -214,7 +212,6 @@ Common tactic IDs:
 | `TA0043` | Reconnaissance |
 | `TA0001` | Initial Access |
 | `TA0002` | Execution |
-| `TA0003` | Persistence |
 | `TA0004` | Privilege Escalation |
 | `TA0005` | Defense Evasion |
 | `TA0006` | Credential Access |
@@ -598,7 +595,6 @@ src/
         │   └── suid-abuse-linux.md
         ├── lateral/
         │   └── your-new-post.md       ← new file goes here
-        ├── persistence/
         ├── exfil/
         ├── evasion/
         ├── web/
@@ -615,7 +611,7 @@ The category list is fixed in two places. If you genuinely need a new category b
 
 ```typescript
 category: z.enum([
-  "recon", "privesc", "lateral", "persistence",
+  "recon", "privesc", "lateral",
   "exfil", "evasion", "web", "cloud",
   "maldev",   // ← new category
 ]),
@@ -625,7 +621,7 @@ category: z.enum([
 
 ```typescript
 export type Category =
-  | "recon" | "privesc" | "lateral" | "persistence"
+  | "recon" | "privesc" | "lateral"
   | "exfil" | "evasion" | "web" | "cloud"
   | "maldev";   // ← new
 

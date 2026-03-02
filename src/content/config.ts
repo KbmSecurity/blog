@@ -18,7 +18,6 @@ const posts = defineCollection({
       "recon",
       "privesc",
       "lateral",
-      "persistence",
       "exfil",
       "evasion",
       "web",

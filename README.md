@@ -87,7 +87,6 @@ kbm.blog/
 │   │       ├── recon/          # Reconnaissance posts
 │   │       ├── privesc/        # Privilege escalation posts
 │   │       ├── lateral/        # Lateral movement posts
-│   │       ├── persistence/    # Persistence mechanism posts
 │   │       ├── exfil/          # Exfiltration posts
 │   │       ├── evasion/        # AV/EDR evasion posts
 │   │       ├── web/            # Web attack posts
@@ -132,7 +131,7 @@ src/content/posts/<category>/<slug>.md
 title: "Your Post Title"
 date: 2025-03-01
 description: "One-sentence summary (max 300 chars)."
-category: privesc          # recon | privesc | lateral | persistence | exfil | evasion | web | cloud
+category: privesc          # recon | privesc | lateral | exfil | evasion | web | cloud
 os: [linux]                # linux | windows | macos | all (array)
 difficulty: medium         # easy | medium | hard | expert
 mitre_tactic: TA0004       # optional — MITRE ATT&CK Tactic ID
@@ -173,7 +172,6 @@ readingTime: 8             # optional — auto-calculated if omitted
 | `recon` | Reconnaissance & OSINT |
 | `privesc` | Privilege Escalation |
 | `lateral` | Lateral Movement |
-| `persistence` | Persistence Mechanisms |
 | `exfil` | Exfiltration |
 | `evasion` | AV/EDR Evasion |
 | `web` | Web Application Attacks |

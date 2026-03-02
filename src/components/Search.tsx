@@ -30,7 +30,6 @@ const CAT_COLOR: Record<string, string> = {
   recon: "#4fc3f7",
   privesc: "#ff3c3c",
   lateral: "#c792ea",
-  persistence: "#ffd700",
   exfil: "#ff9800",
   evasion: "#00ff41",
   web: "#26c6da",
