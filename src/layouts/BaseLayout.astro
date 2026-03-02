@@ -60,19 +60,21 @@ const {
           pre.style.position = 'relative';
 
           // ── Language label ─────────────────────────────────────────
-          const code = pre.querySelector('code');
-          if (code) {
-            // Shiki puts the language in class="language-xxx"
-            const langClass = [...code.classList].find((c) =>
-              c.startsWith('language-')
-            );
-            if (langClass) {
-              const lang = langClass.replace('language-', '');
-              const label = document.createElement('span');
-              label.textContent = lang;
-              label.className   = 'lang-label';
-              pre.appendChild(label);
+          let lang = pre.dataset.language;
+          if (!lang) {
+            const code = pre.querySelector('code');
+            if (code) {
+              const langClass = [...code.classList].find((c) =>
+                c.startsWith('language-')
+              );
+              if (langClass) lang = langClass.replace('language-', '');
             }
+          }
+          if (lang && lang !== 'text' && lang !== 'plaintext') {
+            const label = document.createElement('span');
+            label.textContent = lang;
+            label.className   = 'lang-label';
+            pre.appendChild(label);
           }
 
           // ── Copy button ────────────────────────────────────────────

@@ -652,12 +652,15 @@ const breadcrumbs = [
     document.querySelectorAll<HTMLElement>("#post-body pre").forEach((pre) => {
         pre.style.position = "relative";
 
-        // Language label from class (shiki sets class="astro-code language-bash" etc.)
-        const classList = Array.from(pre.classList);
-        const langClass = classList.find((c) => c.startsWith("language-"));
-        const lang = langClass ? langClass.replace("language-", "") : null;
+        // Language label from attribute or class
+        let lang = pre.dataset.language;
+        if (!lang) {
+            const classList = Array.from(pre.classList);
+            const langClass = classList.find((c) => c.startsWith("language-"));
+            if (langClass) lang = langClass.replace("language-", "");
+        }
 
-        if (lang && lang !== "text") {
+        if (lang && lang !== "text" && lang !== "plaintext") {
             const label = document.createElement("span");
             label.className = "lang-label";
             label.textContent = lang;
