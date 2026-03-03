@@ -22,6 +22,9 @@ const siteName = "r3d/ops — KBM Security";
 const ogImage = image
     ? new URL(image.startsWith("/") ? image : `/${image}`, Astro.site)
     : null;
+
+const umamiId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
+const clarityId = import.meta.env.PUBLIC_CLARITY_ID;
 ---
 
 <!-- Charset & Viewport -->
@@ -113,3 +116,21 @@ const ogImage = image
         ...(ogImage ? { image: ogImage.href } : {}),
     })}
 />
+
+{umamiId && (
+  <script
+    defer
+    src="https://analytics.umami.is/script.js"
+    data-website-id={umamiId}
+  />
+)}
+
+{clarityId && (
+  <script set:html={`
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "${clarityId}");
+  `} />
+)}
