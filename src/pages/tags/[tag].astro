@@ -93,7 +93,7 @@ const breadcrumbs = [
 const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
 ---
 
-<BaseLayout title={pageTitle} description={pageDesc}>
+<BaseLayout title={pageTitle} description={pageDesc} noIndex={true}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
     <!-- ── Breadcrumb ────────────────────────────────────────────────────── -->

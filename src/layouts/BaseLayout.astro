@@ -4,13 +4,24 @@ import TopNav from '../components/TopNav.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
 
+import "@fontsource/jetbrains-mono/300.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/400-italic.css";
+import "@fontsource/jetbrains-mono/500.css";
+import "@fontsource/jetbrains-mono/700.css";
+
 interface Props {
   title: string;
   description: string;
   image?: string;
   type?: 'website' | 'article';
   publishDate?: Date;
+  modifiedDate?: Date;
+  tags?: string[];
+  category?: string;
+  readingTime?: number;
   class?: string;
+  noIndex?: boolean;
 }
 
 const {
@@ -19,12 +30,17 @@ const {
   image,
   type = 'website',
   publishDate,
+  modifiedDate,
+  tags,
+  category,
+  readingTime,
   class: className = '',
+  noIndex = false,
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="pt-BR" class="dark">
   <head>
     <BaseHead
       title={title}
@@ -32,6 +48,11 @@ const {
       image={image}
       type={type}
       publishDate={publishDate}
+      modifiedDate={modifiedDate}
+      tags={tags}
+      category={category}
+      readingTime={readingTime}
+      noIndex={noIndex}
     />
   </head>
 
