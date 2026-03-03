@@ -5,8 +5,8 @@ import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 
 export default defineConfig({
-  site: "https://gabirusky.github.io",
-  base: "/kbm.blog",
+  site: "https://www.kbmsecurity.com.br",
+  base: "/blog",
 
   integrations: [
     mdx(),
