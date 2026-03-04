@@ -9,6 +9,7 @@ mitre_tactic: TA0005
 mitre_technique: T1562.001
 tags: [amsi, powershell, evasion, windows, av-bypass, reflection, patching]
 status: published
+lang: pt
 readingTime: 12
 ---
 

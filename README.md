@@ -165,6 +165,24 @@ readingTime: 8             # optional — auto-calculated if omitted
 
 - **Images** — place in `public/assets/posts/<slug>/` and reference as `/blog/assets/posts/<slug>/image.png`.
 
+### Auto-Translation to English (EN-US)
+
+Posts ending in `.md` and flagged with `lang: pt` can be automatically translated using DeepL. This script is safe and protects your bash/code blocks from being mangled.
+
+1. Ensure your original post is in Portuguese and has `lang: pt` in its frontmatter.
+2. Create or verify a `.env` file at root level containing: `DEEPL_API_KEY=your_key`.
+3. Run the translator script:
+
+```bash
+# Translates all .md and .mdx files (PT-BR) and generates -en.md (EN-US) files automatically 
+node -r dotenv/config scripts/translate-posts.mjs
+
+# Dry run (test which files will be processed without consuming API quota)
+node -r dotenv/config scripts/translate-posts.mjs --dry-run
+```
+
+The script will automatically generate a new `-en.md` post identical to your original one with all tags properly maintained, skipping translations if the `-en.md` file already exists.
+
 ### Categories
 
 | Category | Description |
@@ -250,15 +268,6 @@ markdown: {
     theme: 'one-dark-pro', // any Shiki bundled theme
   },
 },
-```
-
-### Environment Variables
-
-Create a `.env` file (see `.env.example`):
-
-```bash
-# Optional: Plausible analytics domain
-PUBLIC_PLAUSIBLE_DOMAIN=kbmsecurity.com.br
 ```
 
 ---

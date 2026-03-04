@@ -9,6 +9,8 @@ mitre_tactic: TA0001
 mitre_technique: T1190
 tags: [ctf, vulnhub, linux, brute-force, hydra, nmap, ssh, web-enumeration]
 status: published
+lang: pt
+readingTime: 5
 ---
 
 ## 1. Introdução

@@ -53,11 +53,6 @@ jobs:
         run: npx tsc --noEmit
         continue-on-error: true
 
-      - name: Translate posts (DeepL)
-        run: node scripts/translate-posts.mjs
-        env:
-          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-
       - name: Build site
         run: npm run build
         env:

@@ -9,6 +9,7 @@ mitre_tactic: TA0043
 mitre_technique: T1596
 tags: [osint, recon, passive, shodan, theHarvester, amass, google-dorks]
 status: published
+lang: pt
 readingTime: 12
 ---
 

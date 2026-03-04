@@ -9,6 +9,7 @@ mitre_tactic: TA0004
 mitre_technique: T1548.001
 tags: [suid, linux, privesc, gtfobins, setuid, enumeration]
 status: published
+lang: pt
 readingTime: 9
 ---
 

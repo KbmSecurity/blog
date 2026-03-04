@@ -9,6 +9,7 @@ mitre_tactic: TA0006
 mitre_technique: T1190
 tags: [sqli, blind, web, database, boolean-based, time-based, sqlmap]
 status: published
+lang: pt
 readingTime: 12
 ---
 

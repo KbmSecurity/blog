@@ -9,6 +9,7 @@ mitre_tactic: TA0008
 mitre_technique: T1550.002
 tags: [pass-the-hash, ntlm, lateral-movement, windows, mimikatz, impacket]
 status: published
+lang: pt
 readingTime: 10
 ---
 
