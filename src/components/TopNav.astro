@@ -54,7 +54,7 @@ function isActive(href: string, exact = false): boolean {
         <!-- ── Desktop nav links ──────────────────────────────────── -->
         <nav
             class="hidden md:flex items-center gap-6"
-            aria-label="Main navigation"
+            aria-label="navegação principal"
         >
             {
                 navLinks.map(({ href, label, exact }) => (
@@ -89,7 +89,7 @@ function isActive(href: string, exact = false): boolean {
                 class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-[0.7rem] tracking-wide
                border border-[#1c1c1c] rounded text-[#6e7681] hover:text-[#00ff41]
                hover:border-[#00ff41]/30 transition-all duration-150"
-                title="Back to KBM Security"
+                title="Voltar ao KBM Security"
             >
                 <svg
                     width="10"
@@ -113,7 +113,7 @@ function isActive(href: string, exact = false): boolean {
                 id="nav-toggle"
                 class="md:hidden flex items-center justify-center w-8 h-8
                text-[#6e7681] hover:text-[#00ff41] transition-colors duration-150"
-                aria-label="Toggle navigation menu"
+                aria-label="Alternar menu de navegação"
                 aria-expanded="false"
                 aria-controls="mobile-menu"
             >
@@ -188,7 +188,7 @@ function isActive(href: string, exact = false): boolean {
 <div
     id="mobile-menu"
     role="dialog"
-    aria-label="Mobile navigation"
+    aria-label="Navegação mobile"
     aria-hidden="true"
     aria-modal="true"
     style="display:none;"
@@ -204,7 +204,7 @@ function isActive(href: string, exact = false): boolean {
         <span class="sep">:</span>
         <span class="path">~/blog</span>
         <span class="arrow">$</span>
-        <span class="text-[#c9d1d9]">navigate</span>
+        <span class="text-[#c9d1d9]">navegar</span>
     </p>
 
     {
@@ -231,7 +231,7 @@ function isActive(href: string, exact = false): boolean {
                 {label}
                 {isActive(href, exact) && (
                     <span class="ml-auto text-[0.6rem] text-[#00ff41] tracking-wider uppercase">
-                        active
+                        ativo
                     </span>
                 )}
             </a>
@@ -259,12 +259,12 @@ function isActive(href: string, exact = false): boolean {
                 <polyline points="15 3 21 3 21 9"></polyline>
                 <line x1="10" y1="14" x2="21" y2="3"></line>
             </svg>
-            kbmsecurity.com.br — Red Team Services
+            kbmsecurity.com.br — Serviços Red Team
         </a>
 
         <p class="mt-4 text-[0.65rem] text-[#444d56] leading-relaxed">
-            ⚠ Authorized use only. All content is for educational and
-            professional security research purposes.
+            ⚠ Apenas para uso autorizado. Todo o conteúdo é para fins educacionais e
+            pesquisa profissional em segurança.
         </p>
     </div>
 </div>

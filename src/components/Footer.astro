@@ -15,8 +15,8 @@ const categories = [
 ];
 
 const resources = [
-    { label: "All Posts", href: base },
-    { label: "RSS Feed", href: `${base}feed.xml` },
+    { label: "Todos os Posts", href: base },
+    { label: "Feed RSS", href: `${base}feed.xml` },
     { label: "sitemap.xml", href: `${base}sitemap-index.xml` },
 ];
 
@@ -38,9 +38,9 @@ const external = [
         <p
             class="max-w-7xl mx-auto text-center text-[0.65rem] text-[#ff3c3c]/80 font-mono tracking-wide"
         >
-            ⚠ FOR AUTHORIZED USE ONLY — All content is intended for security
-            professionals in authorized engagements, CTFs, and educational lab
-            environments. Unauthorized use is illegal.
+            ⚠ APENAS PARA USO AUTORIZADO — Todo o conteúdo é destinado a
+            profissionais de segurança em engagements autorizados, CTFs e ambientes
+            de laboratório educacionais. O uso não autorizado é ilegal.
         </p>
     </div>
 
@@ -64,10 +64,10 @@ const external = [
                         KBM
                     </span>
                 </a>
-                <p class="text-[#444d56] text-xs leading-relaxed mb-5">
-                    Red Team Knowledge Base.<br />
-                    Tutorials, scripts &amp; playbooks for<br />
-                    authorized offensive security ops.
+                        <p class="text-[#444d56] text-xs leading-relaxed mb-5">
+                    Base de Conhecimento Red Team.<br />
+                    Tutoriais, scripts &amp; playbooks para<br />
+                    operações ofensivas autorizadas.
                 </p>
 
                 <!-- Terminal-style status -->
@@ -107,7 +107,7 @@ const external = [
 
             <!-- Categories -->
             <div>
-                <h3 class="section-heading mb-4">categories</h3>
+                <h3 class="section-heading mb-4">categorias</h3>
                 <ul class="space-y-2">
                     {
                         categories.map(({ label, href }) => (
@@ -129,7 +129,7 @@ const external = [
 
             <!-- Resources -->
             <div>
-                <h3 class="section-heading mb-4">resources</h3>
+                <h3 class="section-heading mb-4">recursos</h3>
                 <ul class="space-y-2">
                     {
                         resources.map(({ label, href }) => (
@@ -148,7 +148,7 @@ const external = [
                     }
                 </ul>
 
-                <h3 class="section-heading mt-6 mb-4">external</h3>
+                <h3 class="section-heading mt-6 mb-4">externo</h3>
                 <ul class="space-y-2">
                     {
                         external.map(({ label, href }) => (
@@ -172,7 +172,7 @@ const external = [
 
             <!-- Contact / Social -->
             <div>
-                <h3 class="section-heading mb-4">contact</h3>
+                <h3 class="section-heading mb-4">contato</h3>
 
                 <div class="space-y-3">
                     <a
@@ -186,10 +186,10 @@ const external = [
                             >●</span
                         >
                         <div>
-                            <p
+                                <p
                                 class="text-[#6e7681] text-[0.65rem] uppercase tracking-widest mb-0.5"
                             >
-                                Website
+                                Site
                             </p>
                             <p
                                 class="text-[#c9d1d9] text-xs group-hover:text-[#00ff41] transition-colors"
@@ -282,7 +282,7 @@ const external = [
                     href="https://www.kbmsecurity.com.br"
                     class="hover:text-[#6e7681] transition-colors"
                     >KBM Security</a
-                >. All rights reserved.
+                >. Todos os direitos reservados.
             </p>
 
             <div
@@ -292,7 +292,7 @@ const external = [
                 <span class="hidden sm:inline">
                     <span class="text-[#00ff41]">root@r3d-ops</span>
                     <span class="text-[#6e7681]">:~# </span>
-                    <span class="text-[#c9d1d9]">stay curious</span>
+                    <span class="text-[#c9d1d9]">fique curioso</span>
                     <span
                         class="inline-block w-1.5 h-3 bg-[#00ff41] ml-0.5 animate-[blink_1s_step-end_infinite] align-middle"
                     ></span>

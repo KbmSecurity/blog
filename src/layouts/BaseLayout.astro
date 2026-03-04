@@ -100,24 +100,24 @@ const {
 
           // ── Copy button ────────────────────────────────────────────
           const btn = document.createElement('button');
-          btn.textContent = 'copy';
+          btn.textContent = 'copiar';
           btn.className   = 'copy-btn';
-          btn.setAttribute('aria-label', 'Copy code to clipboard');
+          btn.setAttribute('aria-label', 'Copiar código para área de transferência');
 
           btn.addEventListener('click', async () => {
             const text = code?.textContent ?? pre.textContent ?? '';
             try {
               await navigator.clipboard.writeText(text);
-              btn.textContent = '✓ copied';
+              btn.textContent = '✓ copiado';
               btn.classList.add('copied');
               setTimeout(() => {
-                btn.textContent = 'copy';
+                btn.textContent = 'copiar';
                 btn.classList.remove('copied');
               }, 2000);
             } catch {
-              btn.textContent = 'error';
+              btn.textContent = 'erro';
               setTimeout(() => {
-                btn.textContent = 'copy';
+                btn.textContent = 'copiar';
               }, 2000);
             }
           });

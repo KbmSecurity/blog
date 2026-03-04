@@ -247,7 +247,7 @@ const breadcrumbs = [
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                                 ></path>
                             </svg>
-                            {readingTime} min read
+                            {readingTime} min de leitura
                         </span>
 
                         <!-- Post path hint -->
@@ -318,7 +318,7 @@ const breadcrumbs = [
                                 <div class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[var(--text-muted)] text-xs">
                                     {mitre_tactic && (
                                         <span>
-                                            Tactic:{" "}
+                                            Tática:{" "}
                                             <a
                                                 href={`https://attack.mitre.org/tactics/${mitre_tactic}/`}
                                                 target="_blank"
@@ -334,7 +334,7 @@ const breadcrumbs = [
                                     )}
                                     {mitre_technique && (
                                         <span>
-                                            Technique:{" "}
+                                            Técnica:{" "}
                                             <a
                                                 href={getMitreUrl(
                                                     mitre_technique,
@@ -393,17 +393,18 @@ const breadcrumbs = [
                         <span
                             class="text-[var(--red)] font-semibold uppercase tracking-widest text-[0.65rem]"
                         >
-                            ⚠ Legal Disclaimer
+                            ⚠ Aviso Legal
                         </span>
                         <p class="mt-1">
-                            This content is intended exclusively for security
-                            professionals operating in authorized environments
-                            (penetration tests, red team engagements, CTF
-                            competitions, or personal lab setups). Unauthorized
-                            use of these techniques against systems you do not
-                            own or have explicit written permission to test is
-                            illegal and unethical. KBM Security assumes no
-                            liability for misuse.
+                            Este conteúdo é destinado exclusivamente a
+                            profissionais de segurança que operam em ambientes
+                            autorizados (testes de penetração, engagements red
+                            team, competições CTF ou laboratórios pessoais). O
+                            uso não autorizado dessas técnicas contra sistemas
+                            que você não possui ou não tem permissão escrita
+                            explícita para testar é ilegal e antiético. A KBM
+                            Security não assume responsabilidade por uso
+                            indevido.
                         </p>
                     </div>
 
@@ -430,7 +431,7 @@ const breadcrumbs = [
                                     stroke-width="2"
                                     d="M15 19l-7-7 7-7"></path>
                             </svg>
-                            all posts
+                            todos os posts
                         </a>
 
                         <a
@@ -440,7 +441,7 @@ const breadcrumbs = [
                      hover:text-[var(--green)] hover:border-[var(--green)]/30
                      transition-all duration-150"
                         >
-                            more {catMeta.label}
+                            mais {catMeta.label}
                             <svg
                                 class="w-4 h-4"
                                 fill="none"
@@ -468,7 +469,7 @@ const breadcrumbs = [
                                 id="related-heading"
                                 class="section-heading mb-6"
                             >
-                                related posts
+                                posts relacionados
                             </h2>
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {related.map((relPost) => (
@@ -500,7 +501,7 @@ const breadcrumbs = [
                         <div>
                             <span
                                 class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
-                                >Category</span
+                                >Categoria</span
                             >
                             <div class="mt-0.5 flex items-center gap-1.5">
                                 <span
@@ -519,7 +520,7 @@ const breadcrumbs = [
                         <div>
                             <span
                                 class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
-                                >Difficulty</span
+                                >Dificuldade</span
                             >
                             <div class="mt-0.5">
                                 <span
@@ -537,7 +538,7 @@ const breadcrumbs = [
                         <div>
                             <span
                                 class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
-                                >Target OS</span
+                                >SO Alvo</span
                             >
                             <div class="mt-0.5 flex flex-wrap gap-1">
                                 {
@@ -553,7 +554,7 @@ const breadcrumbs = [
                         <div>
                             <span
                                 class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
-                                >Read time</span
+                                >Tempo de leitura</span
                             >
                             <div class="mt-0.5 text-[var(--text-muted)]">
                                 {readingTime} min
@@ -563,7 +564,7 @@ const breadcrumbs = [
                         <div>
                             <span
                                 class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
-                                >Published</span
+                                >Publicado</span
                             >
                             <div class="mt-0.5 text-[var(--text-muted)]">
                                 <time datetime={date.toISOString()}
@@ -673,8 +674,8 @@ const breadcrumbs = [
         // Copy button
         const btn = document.createElement("button");
         btn.className = "copy-btn";
-        btn.textContent = "copy";
-        btn.setAttribute("aria-label", "Copy code to clipboard");
+        btn.textContent = "copiar";
+        btn.setAttribute("aria-label", "Copiar código para área de transferência");
         btn.setAttribute("type", "button");
         pre.appendChild(btn);
 
@@ -682,16 +683,16 @@ const breadcrumbs = [
             const code = pre.querySelector("code")?.textContent ?? "";
             try {
                 await navigator.clipboard.writeText(code);
-                btn.textContent = "✓ copied";
+                btn.textContent = "✓ copiado";
                 btn.classList.add("copied");
                 setTimeout(() => {
-                    btn.textContent = "copy";
+                    btn.textContent = "copiar";
                     btn.classList.remove("copied");
                 }, 2000);
             } catch {
-                btn.textContent = "failed";
+                btn.textContent = "falhou";
                 setTimeout(() => {
-                    btn.textContent = "copy";
+                    btn.textContent = "copiar";
                 }, 2000);
             }
         });

@@ -21,7 +21,7 @@ export type OS = "linux" | "windows" | "macos" | "all";
 // ─── Date Utilities ───────────────────────────────────────────────────────────
 
 export function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString("pt-BR", {
     year: "numeric",
     month: "short",
     day: "2-digit",
@@ -33,7 +33,7 @@ export function formatDateISO(date: Date): string {
 }
 
 export function formatDateFull(date: Date): string {
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString("pt-BR", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -120,19 +120,19 @@ export const DIFFICULTY_META: Record<
   { label: string; color: string; bg: string; border: string }
 > = {
   easy: {
-    label: "easy",
+    label: "fácil",
     color: "text-[#00ff41]",
     bg: "bg-[#00ff41]/10",
     border: "border-[#00ff41]/30",
   },
   medium: {
-    label: "medium",
+    label: "médio",
     color: "text-[#ffd700]",
     bg: "bg-[#ffd700]/10",
     border: "border-[#ffd700]/30",
   },
   hard: {
-    label: "hard",
+    label: "difícil",
     color: "text-[#ff9800]",
     bg: "bg-[#ff9800]/10",
     border: "border-[#ff9800]/30",

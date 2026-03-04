@@ -38,8 +38,8 @@ const totalTags   = getAllTags(published).length;
 ---
 
 <BaseLayout
-  title="r3d/ops — Red Team Knowledge Base | KBM Security Blog"
-  description="Offensive security tutorials, red team playbooks, scripts and techniques for authorized security professionals. MITRE ATT&CK aligned."
+  title="r3d/ops — Base de Conhecimento Red Team | Blog KBM Security"
+  description="Tutoriais de segurança ofensiva, playbooks red team, scripts e técnicas para profissionais de segurança autorizados. Alinhado ao MITRE ATT&CK."
 >
 
   <!-- ── Hero ──────────────────────────────────────────────────────────────── -->
@@ -83,9 +83,9 @@ const totalTags   = getAllTags(published).length;
 
         <!-- Description -->
         <p class="text-[#6e7681] text-sm sm:text-base leading-relaxed mb-8 font-mono max-w-xl animate-fade-in-up animate-delay-2">
-          Offensive security tutorials, exploitation techniques, and red team
-          playbooks — aligned to MITRE ATT&amp;CK, built for authorized
-          engagements. By <a
+          Tutoriais de segurança ofensiva, técnicas de exploração e playbooks
+          red team — alinhados ao MITRE ATT&amp;CK, pensados para
+          engagements autorizados. Por <a
             href="https://www.kbmsecurity.com.br"
             target="_blank"
             rel="noopener noreferrer"
@@ -106,7 +106,7 @@ const totalTags   = getAllTags(published).length;
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
-            browse posts
+            ver posts
           </a>
           <a
             href="https://www.kbmsecurity.com.br"
@@ -160,7 +160,7 @@ const totalTags   = getAllTags(published).length;
   <section class="border-b border-[#1c1c1c]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-      <h2 class="section-heading mb-6">attack categories</h2>
+      <h2 class="section-heading mb-6">categorias de ataque</h2>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2">
         {catCounts.map(({ cat, meta, count }, i) => (
@@ -193,7 +193,7 @@ const totalTags   = getAllTags(published).length;
     <section class="border-b border-[#1c1c1c]">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        <h2 class="section-heading mb-6">featured</h2>
+        <h2 class="section-heading mb-6">destaque</h2>
 
         <a
           href={postUrl(base, featured.slug)}
@@ -231,7 +231,7 @@ const totalTags   = getAllTags(published).length;
                 <span class="os-badge">{o}</span>
               ))}
               <span class="ml-auto text-[0.65rem] font-mono text-[#444d56]">
-                FEATURED
+                DESTAQUE
               </span>
             </div>
 
@@ -252,7 +252,7 @@ const totalTags   = getAllTags(published).length;
                 {featured.data.readingTime ?? calcReadingTime(featured.body)} min read
               </span>
               <span class="ml-auto flex items-center gap-1.5 text-[#6e7681] group-hover:text-[#00ff41] transition-colors">
-                read post
+                ler post
                 <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -271,7 +271,7 @@ const totalTags   = getAllTags(published).length;
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
       <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h2 class="section-heading flex-1">recent posts</h2>
+        <h2 class="section-heading flex-1">posts recentes</h2>
         <span class="text-[0.65rem] font-mono text-[#444d56]">
           {sorted.length} total
         </span>
@@ -280,8 +280,8 @@ const totalTags   = getAllTags(published).length;
       {sorted.length === 0 ? (
         <!-- Empty state -->
         <div class="py-16 text-center font-mono">
-          <p class="text-[#444d56] text-sm mb-2">// no posts published yet</p>
-          <p class="text-[#6e7681] text-xs">content coming soon</p>
+          <p class="text-[#444d56] text-sm mb-2">// nenhum post publicado ainda</p>
+          <p class="text-[#6e7681] text-xs">conteúdo em breve</p>
         </div>
       ) : (
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -306,7 +306,7 @@ const totalTags   = getAllTags(published).length;
                    hover:text-[#00ff41] hover:border-[#00ff41]/30
                    transition-all duration-200"
           >
-            view all {sorted.length} posts
+            ver todos os {sorted.length} posts
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
@@ -358,11 +358,11 @@ const totalTags   = getAllTags(published).length;
         </div>
 
         <h2 class="text-xl md:text-2xl font-bold font-mono text-[#c9d1d9] mb-3">
-          Need a Red Team engagement?
+          Precisa de um Red Team engagement?
         </h2>
         <p class="text-[#6e7681] text-sm leading-relaxed mb-6 font-mono">
-          KBM Security provides professional red team operations,
-          penetration testing, and adversary simulation services.
+          A KBM Security oferece operações profissionais de red team,
+          pentest e serviços de simulação de adversários.
         </p>
 
         <a
@@ -383,11 +383,11 @@ const totalTags   = getAllTags(published).length;
 
         <!-- RSS hint -->
         <p class="mt-6 text-[0.65rem] text-[#444d56] font-mono">
-          Subscribe via{' '}
+          Assine via{' '}
           <a href={`${base}feed.xml`} class="text-[#6e7681] hover:text-[#00ff41] transition-colors underline">
-            RSS feed
+            feed RSS
           </a>
-          {' '}— stay updated on new techniques.
+          {' '}— fique por dentro das novas técnicas.
         </p>
       </div>
 

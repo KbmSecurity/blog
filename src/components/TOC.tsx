@@ -132,7 +132,7 @@ export default function TOC({ headings }: TOCProps) {
   if (tocHeadings.length === 0) return null;
 
   return (
-    <nav aria-label="Table of contents" style={{ fontFamily: "inherit" }}>
+    <nav aria-label="Índice" style={{ fontFamily: "inherit" }}>
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div
         style={{
@@ -152,7 +152,7 @@ export default function TOC({ headings }: TOCProps) {
             fontWeight: 600,
           }}
         >
-          on this page
+          nesta página
         </span>
       </div>
 
@@ -258,7 +258,7 @@ export default function TOC({ headings }: TOCProps) {
             letterSpacing: "0.08em",
           }}
         >
-          {tocHeadings.length} sections
+          {tocHeadings.length} seções
         </span>
       </div>
 

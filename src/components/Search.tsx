@@ -236,7 +236,7 @@ export default function Search({ baseUrl }: SearchProps) {
       {/* ── Trigger button ──────────────────────────────────────────────── */}
       <button
         onClick={open}
-        aria-label="Open search (Ctrl+K)"
+        aria-label="Abrir busca (Ctrl+K)"
         style={{
           display: "flex",
           alignItems: "center",
@@ -272,7 +272,7 @@ export default function Search({ baseUrl }: SearchProps) {
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        <span>search</span>
+        <span>buscar</span>
         <span
           style={{
             marginLeft: "0.25rem",
@@ -354,8 +354,8 @@ export default function Search({ baseUrl }: SearchProps) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="search techniques, categories, tags..."
-                aria-label="Search posts"
+                placeholder="buscar técnicas, categorias, tags..."
+                aria-label="Buscar posts"
                 style={{
                   flex: 1,
                   background: "transparent",
@@ -535,7 +535,7 @@ export default function Search({ baseUrl }: SearchProps) {
                 <div style={{ marginBottom: "0.4rem", fontSize: "1.2rem" }}>
                   //
                 </div>
-                no results for &ldquo;
+                nenhum resultado para &ldquo;
                 <span style={{ color: "#6e7681" }}>{query}</span>
                 &rdquo;
               </div>
@@ -609,7 +609,7 @@ export default function Search({ baseUrl }: SearchProps) {
                 color: "#444d56",
               }}
             >
-              <span>r3d/ops knowledge base</span>
+              <span>r3d/ops base de conhecimento</span>
               <div style={{ display: "flex", gap: "0.75rem" }}>
                 <span>
                   <kbd
@@ -622,7 +622,7 @@ export default function Search({ baseUrl }: SearchProps) {
                   >
                     ↑↓
                   </kbd>{" "}
-                  navigate
+                  navegar
                 </span>
                 <span>
                   <kbd
@@ -635,7 +635,7 @@ export default function Search({ baseUrl }: SearchProps) {
                   >
                     ↵
                   </kbd>{" "}
-                  open
+                  abrir
                 </span>
               </div>
             </div>

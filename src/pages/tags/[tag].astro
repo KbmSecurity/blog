@@ -80,8 +80,8 @@ const pageTitle = isCategory
   : `#${tag} — r3d/ops`;
 
 const pageDesc = isCategory
-  ? `Offensive security techniques and tutorials for ${catMeta!.label}. ${matchedPosts.length} posts.`
-  : `All r3d/ops posts tagged #${tag}. ${matchedPosts.length} results.`;
+  ? `Técnicas e tutoriais de segurança ofensiva para ${catMeta!.label}. ${matchedPosts.length} posts.`
+  : `Todos os posts r3d/ops com a tag #${tag}. ${matchedPosts.length} resultados.`;
 
 const breadcrumbs = [
   { label: 'blog', href: base },
@@ -133,7 +133,7 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
           <!-- Title -->
           <h1 class="text-2xl sm:text-3xl font-bold font-mono text-[var(--text)] mb-3">
             <span class="text-[var(--text-dim)] font-normal">
-              {isCategory ? '/ category / ' : '/ tag / '}
+              {isCategory ? '/ categoria / ' : '/ tag / '}
             </span>
             <span class={isCategory ? catMeta!.color : 'text-[var(--blue)]'}>
               {tag}
@@ -143,8 +143,8 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
           <!-- Description -->
           <p class="text-[var(--text-muted)] text-sm font-mono leading-relaxed max-w-2xl">
             {isCategory
-              ? `Techniques, methodologies, and tooling for ${catMeta!.label.toLowerCase()} operations.`
-              : `All posts and techniques tagged with #${tag}.`}
+              ? `Técnicas, metodologias e ferramentas para operações de ${catMeta!.label.toLowerCase()}.`
+              : `Todos os posts e técnicas marcados com #${tag}.`}
           </p>
 
           <!-- Stats bar -->
@@ -219,10 +219,10 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
               //
             </div>
             <p class="text-[var(--text-muted)] font-mono text-sm mb-1">
-              no posts found for &ldquo;{tag}&rdquo;
+              nenhum post encontrado para &ldquo;{tag}&rdquo;
             </p>
             <p class="text-[var(--text-dim)] font-mono text-xs mb-6">
-              check back later or explore other categories
+              volte mais tarde ou explore outras categorias
             </p>
             <a
               href={base}
@@ -231,7 +231,7 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
                      hover:text-[var(--green)] hover:border-[var(--green)]/30
                      transition-all duration-150"
             >
-              ← all posts
+              ← todos os posts
             </a>
           </div>
         )}
@@ -243,7 +243,7 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
 
         <!-- All categories -->
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4">
-          <h2 class="section-heading mb-4">categories</h2>
+          <h2 class="section-heading mb-4">categorias</h2>
           <nav class="space-y-1">
             {(Object.entries(CATEGORY_META) as [Category, typeof CATEGORY_META[Category]][]).map(([key, meta]) => {
               const count = filterPublished(allPosts).filter(
@@ -274,7 +274,7 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
         <!-- Related tags -->
         {relatedTags.length > 0 && (
           <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4">
-            <h2 class="section-heading mb-4">related tags</h2>
+            <h2 class="section-heading mb-4">tags relacionadas</h2>
             <div class="flex flex-wrap gap-1.5">
               {relatedTags.map(({ tag: t, count }) => (
                 <a
@@ -295,7 +295,7 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
 
         <!-- Difficulty legend -->
         <div class="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4">
-          <h2 class="section-heading mb-4">difficulty</h2>
+          <h2 class="section-heading mb-4">dificuldade</h2>
           <div class="space-y-2">
             {(Object.entries(DIFFICULTY_META) as [Difficulty, typeof DIFFICULTY_META[Difficulty]][]).map(([key, meta]) => {
               const count = matchedPosts.filter((p) => p.data.difficulty === key).length;
