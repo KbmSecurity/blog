@@ -42,6 +42,12 @@ const {
 <!doctype html>
 <html lang="pt-BR" class="dark">
   <head>
+    <script is:inline>
+      (function() {
+        const lang = localStorage.getItem('kbm-lang') || 'pt';
+        document.documentElement.setAttribute('data-lang', lang);
+      })();
+    </script>
     <BaseHead
       title={title}
       description={description}

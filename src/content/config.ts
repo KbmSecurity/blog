@@ -43,6 +43,10 @@ const posts = defineCollection({
 
     /** Estimated reading time in minutes — auto-calculated from body if omitted */
     readingTime: z.number().optional(),
+
+    /** Translation markers */
+    lang: z.string().optional(),
+    lang_original: z.string().optional(),
   }),
 });
 

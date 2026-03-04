@@ -807,6 +807,15 @@
     }
 }
 
+/* ─── Language Toggles ────────────────────────────────────────── */
+html[data-lang="pt"] .lang-en {
+    display: none !important;
+}
+
+html[data-lang="en"] .lang-pt {
+    display: none !important;
+}
+
 @keyframes toc-progress {
     from {
         transform: scaleX(0);

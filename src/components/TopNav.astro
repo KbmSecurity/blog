@@ -1,5 +1,6 @@
 ---
 import Search from "./Search.tsx";
+import ToggleLang from "./ToggleLang.tsx";
 
 const rawBase = import.meta.env.BASE_URL;
 const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
@@ -81,32 +82,10 @@ function isActive(href: string, exact = false): boolean {
             <!-- Search island (React) -->
             <Search client:load baseUrl={base} />
 
-            <!-- Link to main KBM site -->
-            <a
-                href="https://www.kbmsecurity.com.br"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-[0.7rem] tracking-wide
-               border border-[#1c1c1c] rounded text-[#6e7681] hover:text-[#00ff41]
-               hover:border-[#00ff41]/30 transition-all duration-150"
-                title="Voltar ao KBM Security"
-            >
-                <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path
-                        d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-                    ></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-                kbmsecurity.com.br
-            </a>
+            <!-- Translation Toggle -->
+            <div class="hidden sm:block">
+                <ToggleLang client:load />
+            </div>
 
             <!-- Mobile hamburger button -->
             <button

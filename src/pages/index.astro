@@ -21,20 +21,29 @@ const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
 
 const allPosts   = await getCollection('posts');
 const published  = filterPublished(allPosts);
-const sorted     = sortPostsByDate(published);
-const recent     = sorted.slice(0, 6);
-const featured   = sorted[0];
-const topTags    = getAllTags(published).slice(0, 16);
+const publishedPT = published.filter(p => !p.slug.endsWith('-en'));
+const publishedEN = published.filter(p => p.slug.endsWith('-en'));
+
+const sortedPT   = sortPostsByDate(publishedPT);
+const sortedEN   = sortPostsByDate(publishedEN);
+
+const recent     = [...sortedPT.slice(0, 6), ...sortedEN.slice(0, 6)].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const featuredPT = sortedPT[0];
+const featuredEN = sortedEN[0];
+const featuredPosts = [featuredPT, featuredEN].filter(Boolean);
+
+const topTags    = getAllTags(publishedPT).slice(0, 16);
 
 const categories = Object.entries(CATEGORY_META) as [Category, typeof CATEGORY_META[Category]][];
 const catCounts  = categories.map(([cat, meta]) => ({
   cat,
   meta,
-  count: getPostsByCategory(published, cat).length,
+  count: getPostsByCategory(publishedPT, cat).length,
 }));
 
-const totalPosts  = published.length;
-const totalTags   = getAllTags(published).length;
+const totalPosts  = publishedPT.length;
+const totalTags   = getAllTags(publishedPT).length;
 ---
 
 <BaseLayout
@@ -190,8 +199,8 @@ const totalTags   = getAllTags(published).length;
 
   <!-- ── Featured Post ──────────────────────────────────────────────────────── -->
   <div id="destaques"></div>
-  {featured && (
-    <section class="border-b border-[#1c1c1c]">
+  {featuredPosts.map(featured => (
+    <section class:list={["border-b border-[#1c1c1c]", featured.slug.endsWith('-en') ? 'lang-en' : 'lang-pt']}>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         <h2 class="section-heading mb-6">destaque</h2>
@@ -265,7 +274,7 @@ const totalTags   = getAllTags(published).length;
 
       </div>
     </section>
-  )}
+  ))}
 
   <!-- ── Recent Posts ───────────────────────────────────────────────────────── -->
   <section class="border-b border-[#1c1c1c]">
@@ -274,11 +283,11 @@ const totalTags   = getAllTags(published).length;
       <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h2 class="section-heading flex-1">posts recentes</h2>
         <span class="text-[0.65rem] font-mono text-[#444d56]">
-          {sorted.length} total
+          {totalPosts} total
         </span>
       </div>
 
-      {sorted.length === 0 ? (
+      {totalPosts === 0 ? (
         <!-- Empty state -->
         <div class="py-16 text-center font-mono">
           <p class="text-[#444d56] text-sm mb-2">// nenhum post publicado ainda</p>
@@ -298,7 +307,7 @@ const totalTags   = getAllTags(published).length;
       )}
 
       <!-- View all button -->
-      {sorted.length > 6 && (
+      {totalPosts > 6 && (
         <div class="mt-8 text-center">
           <a
             href={base}
@@ -307,7 +316,7 @@ const totalTags   = getAllTags(published).length;
                    hover:text-[#00ff41] hover:border-[#00ff41]/30
                    transition-all duration-200"
           >
-            ver todos os {sorted.length} posts
+            ver todos os {totalPosts} posts
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
