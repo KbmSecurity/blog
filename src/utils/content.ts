@@ -166,6 +166,24 @@ export function filterPublished(posts: Post[]): Post[] {
   return posts.filter((p) => p.data.status === "published");
 }
 
+/**
+ * Removes duplicate bilingual entries (e.g. post-en / post-pt).
+ * Keeps the PT variant when both exist, otherwise keeps whichever is present.
+ * Use this before counting tags, categories, or any statistics shown to users.
+ */
+export function deduplicatePosts(posts: Post[]): Post[] {
+  const seen = new Map<string, Post>();
+  for (const post of posts) {
+    const base = post.slug.replace(/-(en|pt)$/, "");
+    const existing = seen.get(base);
+    // Prefer PT; if no entry yet, or current is PT and existing is EN → overwrite
+    if (!existing || (!post.slug.endsWith("-en") && existing.slug.endsWith("-en"))) {
+      seen.set(base, post);
+    }
+  }
+  return [...seen.values()];
+}
+
 export function getPostsByCategory(posts: Post[], category: Category): Post[] {
   return posts.filter((p) => p.data.category === category);
 }

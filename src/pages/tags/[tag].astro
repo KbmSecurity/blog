@@ -6,6 +6,7 @@ import PostCard from '../../components/PostCard.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import {
   filterPublished,
+  deduplicatePosts,
   sortPostsByDate,
   getAllTags,
   getPostsByTag,
@@ -50,12 +51,15 @@ const matchedPosts = sortPostsByDate(
   )
 );
 
+// Deduplicated matched posts — used for stats (so PT+EN pairs count once)
+const matchedUnique = deduplicatePosts(matchedPosts);
+
 // Determine if this tag is actually a category
 const isCategory   = tag in CATEGORY_META;
 const catMeta      = isCategory ? CATEGORY_META[tag as Category] : null;
 
 // All tags present across matched posts (for related tags sidebar)
-const relatedTags = getAllTags(matchedPosts)
+const relatedTags = getAllTags(matchedUnique)
   .filter((t) => t.tag !== tag)
   .slice(0, 12);
 
@@ -63,13 +67,13 @@ const relatedTags = getAllTags(matchedPosts)
 const diffCount: Record<Difficulty, number> = {
   easy: 0, medium: 0, hard: 0, expert: 0,
 };
-matchedPosts.forEach((p) => {
+matchedUnique.forEach((p) => {
   diffCount[p.data.difficulty] = (diffCount[p.data.difficulty] ?? 0) + 1;
 });
 
 // OS distribution
 const osCount: Record<string, number> = {};
-matchedPosts.forEach((p) => {
+matchedUnique.forEach((p) => {
   p.data.os.forEach((o) => {
     osCount[o] = (osCount[o] ?? 0) + 1;
   });
@@ -80,8 +84,8 @@ const pageTitle = isCategory
   : `#${tag} — r3d/ops`;
 
 const pageDesc = isCategory
-  ? `Técnicas e tutoriais de segurança ofensiva para ${catMeta!.label}. ${matchedPosts.length} posts.`
-  : `Todos os posts r3d/ops com a tag #${tag}. ${matchedPosts.length} resultados.`;
+  ? `Técnicas e tutoriais de segurança ofensiva para ${catMeta!.label}. ${matchedUnique.length} posts.`
+  : `Todos os posts r3d/ops com a tag #${tag}. ${matchedUnique.length} resultados.`;
 
 const breadcrumbs = [
   { label: 'blog', href: base },
@@ -126,7 +130,7 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
             )}
 
             <span class="text-[var(--text-dim)] text-sm font-mono">
-              {matchedPosts.length} post{matchedPosts.length !== 1 ? 's' : ''}
+              {matchedUnique.length} post{matchedUnique.length !== 1 ? 's' : ''}
             </span>
           </div>
 
@@ -249,9 +253,14 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
           <h2 class="section-heading mb-4">categorias</h2>
           <nav class="space-y-1">
             {(Object.entries(CATEGORY_META) as [Category, typeof CATEGORY_META[Category]][]).map(([key, meta]) => {
-              const count = filterPublished(allPosts).filter(
-                (p) => p.data.category === key
-              ).length;
+              const count = filterPublished(allPosts)
+                .filter((p) => p.data.category === key)
+                .reduce((acc, p) => {
+                  // count only one post per bilingual pair
+                  const base = p.slug.replace(/-(en|pt)$/, '');
+                  acc.add(base);
+                  return acc;
+                }, new Set()).size;
               const isActive = tag === key;
               return (
                 <a
@@ -301,7 +310,7 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
           <h2 class="section-heading mb-4">dificuldade</h2>
           <div class="space-y-2">
             {(Object.entries(DIFFICULTY_META) as [Difficulty, typeof DIFFICULTY_META[Difficulty]][]).map(([key, meta]) => {
-              const count = matchedPosts.filter((p) => p.data.difficulty === key).length;
+              const count = matchedUnique.filter((p) => p.data.difficulty === key).length;
               if (count === 0) return null;
               return (
                 <div class="flex items-center justify-between">

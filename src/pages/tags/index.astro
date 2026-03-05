@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import {
   filterPublished,
+  deduplicatePosts,
   getAllTags,
   getPostsByCategory,
   getPostsByTag,
@@ -15,11 +16,12 @@ import {
 
 const rawBase   = import.meta.env.BASE_URL;
 const base      = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
-const allPosts  = await getCollection('posts');
-const published = filterPublished(allPosts);
+const allPosts   = await getCollection('posts');
+const published  = filterPublished(allPosts);
+const deduplicated = deduplicatePosts(published);
 
-// All tags sorted by count
-const allTags = getAllTags(published);
+// All tags sorted by count (deduplicated so bilingual pairs count once)
+const allTags = getAllTags(deduplicated);
 
 // Tags grouped by the categories they appear in
 const categories = Object.keys(CATEGORY_META) as Category[];
@@ -27,7 +29,7 @@ const categories = Object.keys(CATEGORY_META) as Category[];
 // For each category, get the tags that appear in its posts
 const tagsByCategory = categories
   .map((cat) => {
-    const catPosts = getPostsByCategory(published, cat);
+    const catPosts = getPostsByCategory(deduplicated, cat);
     const tags     = getAllTags(catPosts);
     return { cat, meta: CATEGORY_META[cat], count: catPosts.length, tags };
   })
@@ -87,7 +89,7 @@ const breadcrumbs = [
         <span class="flex items-center gap-2">
           <span class="w-1.5 h-1.5 rounded-full bg-[var(--purple)]"></span>
           <span class="text-[var(--text-dim)]">total de posts:</span>
-          <span class="text-[var(--purple)]">{published.length}</span>
+          <span class="text-[var(--purple)]">{deduplicated.length}</span>
         </span>
       </div>
     </header>
@@ -255,7 +257,7 @@ const breadcrumbs = [
           { id: 'TA0010', name: 'Exfiltration',          color: '#ff9800' },
           { id: 'TA0011', name: 'Command & Control',     color: '#82b1ff' },
         ].map(({ id, name, color }) => {
-          const tacticPosts = published.filter(
+          const tacticPosts = deduplicated.filter(
             (p) => p.data.mitre_tactic === id
           );
           return (
