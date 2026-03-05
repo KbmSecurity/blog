@@ -247,7 +247,7 @@ const breadcrumbs = [
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                                 ></path>
                             </svg>
-                            {readingTime} min de leitura
+                            {readingTime} <span data-i18n="card.readingTime">min de leitura</span>
                         </span>
 
                         <!-- Post path hint -->
@@ -318,7 +318,7 @@ const breadcrumbs = [
                                 <div class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[var(--text-muted)] text-xs">
                                     {mitre_tactic && (
                                         <span>
-                                            Tática:{" "}
+                                            <span data-i18n="post.mitre.tactic">Tática</span>:{" "}
                                             <a
                                                 href={`https://attack.mitre.org/tactics/${mitre_tactic}/`}
                                                 target="_blank"
@@ -334,7 +334,7 @@ const breadcrumbs = [
                                     )}
                                     {mitre_technique && (
                                         <span>
-                                            Técnica:{" "}
+                                            <span data-i18n="post.mitre.technique">Técnica</span>:{" "}
                                             <a
                                                 href={getMitreUrl(
                                                     mitre_technique,
@@ -392,10 +392,11 @@ const breadcrumbs = [
                     >
                         <span
                             class="text-[var(--red)] font-semibold uppercase tracking-widest text-[0.65rem]"
+                            data-i18n="post.footer.disclaimer.title"
                         >
                             ⚠ Aviso Legal
                         </span>
-                        <p class="mt-1">
+                        <p class="mt-1" data-i18n="post.footer.disclaimer.body">
                             Este conteúdo é destinado exclusivamente a
                             profissionais de segurança que operam em ambientes
                             autorizados (testes de penetração, engagements red
@@ -431,7 +432,7 @@ const breadcrumbs = [
                                     stroke-width="2"
                                     d="M15 19l-7-7 7-7"></path>
                             </svg>
-                            todos os posts
+                            <span data-i18n="post.footer.allPosts">todos os posts</span>
                         </a>
 
                         <a
@@ -468,6 +469,7 @@ const breadcrumbs = [
                             <h2
                                 id="related-heading"
                                 class="section-heading mb-6"
+                                data-i18n="post.footer.related"
                             >
                                 posts relacionados
                             </h2>
@@ -501,6 +503,7 @@ const breadcrumbs = [
                         <div>
                             <span
                                 class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
+                                data-i18n="post.meta.category"
                                 >Categoria</span
                             >
                             <div class="mt-0.5 flex items-center gap-1.5">
@@ -520,6 +523,7 @@ const breadcrumbs = [
                         <div>
                             <span
                                 class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
+                                data-i18n="post.meta.difficulty"
                                 >Dificuldade</span
                             >
                             <div class="mt-0.5">
@@ -538,6 +542,7 @@ const breadcrumbs = [
                         <div>
                             <span
                                 class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
+                                data-i18n="post.meta.os"
                                 >SO Alvo</span
                             >
                             <div class="mt-0.5 flex flex-wrap gap-1">
@@ -554,6 +559,7 @@ const breadcrumbs = [
                         <div>
                             <span
                                 class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
+                                data-i18n="post.meta.readingTime"
                                 >Tempo de leitura</span
                             >
                             <div class="mt-0.5 text-[var(--text-muted)]">
@@ -564,6 +570,7 @@ const breadcrumbs = [
                         <div>
                             <span
                                 class="text-[var(--text-dim)] uppercase tracking-widest text-[0.6rem]"
+                                data-i18n="post.meta.published"
                                 >Publicado</span
                             >
                             <div class="mt-0.5 text-[var(--text-muted)]">

@@ -47,6 +47,10 @@ const posts = defineCollection({
     /** Translation markers */
     lang: z.string().optional(),
     lang_original: z.string().optional(),
+
+    /** English metadata (used when lang toggle is EN) */
+    titleEn: z.string().max(120).optional(),
+    descriptionEn: z.string().max(300).optional(),
   }),
 });
 

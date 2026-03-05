@@ -1,9 +1,9 @@
 ---
-title: Death Note 1 — VulnHub Walkthrough Completo
+title: Death Note 1 — Complete VulnHub Walkthrough
 date: 2026-02-21T00:00:00.000Z
 description: >-
-  Walkthrough da máquina Death Note 1 do VulnHub: reconhecimento, brute-force
-  SSH com Hydra, decodificação hex/base64 e captura do root.txt.
+  Walkthrough of the Death Note 1 VulnHub machine: reconnaissance, SSH
+  brute-force with Hydra, hex/base64 decoding, and capturing root.txt.
 category: ctf
 os:
   - linux

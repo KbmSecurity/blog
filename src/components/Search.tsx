@@ -54,6 +54,7 @@ export default function Search({ baseUrl }: SearchProps) {
   const [error, setError] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isMac, setIsMac] = useState(false);
+  const [lang, setLang] = useState<"pt" | "en">("pt");
 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -102,6 +103,18 @@ export default function Search({ baseUrl }: SearchProps) {
       (/Mac|iPhone|iPad|iPod/.test(navigator.platform) ||
         navigator.userAgent.includes("Mac"));
     setIsMac(mac);
+  }, []);
+
+  // ── Sync language from html[data-lang] ────────────────────────────────────
+  useEffect(() => {
+    const readLang = () => {
+      const v = document.documentElement.getAttribute("data-lang");
+      setLang(v === "en" ? "en" : "pt");
+    };
+    readLang();
+    const observer = new MutationObserver(readLang);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-lang"] });
+    return () => observer.disconnect();
   }, []);
 
   // ── Open / close ────────────────────────────────────────────────────────────
@@ -272,7 +285,7 @@ export default function Search({ baseUrl }: SearchProps) {
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        <span>buscar</span>
+        <span>{lang === "en" ? "search" : "buscar"}</span>
         <span
           style={{
             marginLeft: "0.25rem",
@@ -354,8 +367,8 @@ export default function Search({ baseUrl }: SearchProps) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="buscar técnicas, categorias, tags..."
-                aria-label="Buscar posts"
+                placeholder={lang === "en" ? "search techniques, categories, tags..." : "buscar técnicas, categorias, tags..."}
+                aria-label={lang === "en" ? "Search posts" : "Buscar posts"}
                 style={{
                   flex: 1,
                   background: "transparent",
@@ -535,9 +548,9 @@ export default function Search({ baseUrl }: SearchProps) {
                 <div style={{ marginBottom: "0.4rem", fontSize: "1.2rem" }}>
                   //
                 </div>
-                nenhum resultado para &ldquo;
+                {lang === "en" ? "no results for «" : "nenhum resultado para «"}
                 <span style={{ color: "#6e7681" }}>{query}</span>
-                &rdquo;
+                »
               </div>
             )}
 
@@ -609,7 +622,7 @@ export default function Search({ baseUrl }: SearchProps) {
                 color: "#444d56",
               }}
             >
-              <span>r3d/ops base de conhecimento</span>
+              <span>{lang === "en" ? "r3d/ops knowledge base" : "r3d/ops base de conhecimento"}</span>
               <div style={{ display: "flex", gap: "0.75rem" }}>
                 <span>
                   <kbd
@@ -622,7 +635,7 @@ export default function Search({ baseUrl }: SearchProps) {
                   >
                     ↑↓
                   </kbd>{" "}
-                  navegar
+                  {lang === "en" ? "navigate" : "navegar"}
                 </span>
                 <span>
                   <kbd
@@ -635,7 +648,7 @@ export default function Search({ baseUrl }: SearchProps) {
                   >
                     ↵
                   </kbd>{" "}
-                  abrir
+                  {lang === "en" ? "open" : "abrir"}
                 </span>
               </div>
             </div>

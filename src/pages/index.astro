@@ -48,7 +48,9 @@ const totalTags   = getAllTags(publishedPT).length;
 
 <BaseLayout
   title="r3d/ops — Base de Conhecimento Red Team | Blog KBM Security"
+  titleEn="r3d/ops — Red Team Knowledge Base | KBM Security Blog"
   description="Tutoriais de segurança ofensiva, playbooks red team, scripts e técnicas para profissionais de segurança autorizados. Alinhado ao MITRE ATT&CK."
+  descriptionEn="Offensive security tutorials, red team playbooks, scripts and techniques for authorized security professionals. Aligned with MITRE ATT&CK."
 >
 
   <!-- ── Hero ──────────────────────────────────────────────────────────────── -->
@@ -92,9 +94,9 @@ const totalTags   = getAllTags(publishedPT).length;
 
         <!-- Description -->
         <p class="text-[#6e7681] text-sm sm:text-base leading-relaxed mb-8 font-mono max-w-xl animate-fade-in-up animate-delay-2">
-          Tutoriais de segurança ofensiva, técnicas de exploração e playbooks
+          <span data-i18n="index.hero.desc">Tutoriais de segurança ofensiva, técnicas de exploração e playbooks
           red team — alinhados ao MITRE ATT&amp;CK, pensados para
-          engagements autorizados. Por <a
+          engagements autorizados. Por</span> <a
             href="https://www.kbmsecurity.com.br"
             target="_blank"
             rel="noopener noreferrer"
@@ -115,7 +117,7 @@ const totalTags   = getAllTags(publishedPT).length;
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
-            ver posts
+            <span data-i18n="index.hero.cta.posts">ver posts</span>
           </a>
           <a
             href="https://www.kbmsecurity.com.br"
@@ -169,7 +171,7 @@ const totalTags   = getAllTags(publishedPT).length;
   <section class="border-b border-[#1c1c1c]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-      <h2 class="section-heading mb-6">categorias de ataque</h2>
+      <h2 class="section-heading mb-6" data-i18n="index.categories.heading">categorias de ataque</h2>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2">
         {catCounts.map(({ cat, meta, count }, i) => (
@@ -203,7 +205,7 @@ const totalTags   = getAllTags(publishedPT).length;
     <section class:list={["border-b border-[#1c1c1c]", featured.slug.endsWith('-en') ? 'lang-en' : 'lang-pt']}>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        <h2 class="section-heading mb-6">destaque</h2>
+        <h2 class="section-heading mb-6" data-i18n="index.featured.heading">destaque</h2>
 
         <a
           href={postUrl(base, featured.slug)}
@@ -240,7 +242,7 @@ const totalTags   = getAllTags(publishedPT).length;
               {featured.data.os.map((o) => (
                 <span class="os-badge">{o}</span>
               ))}
-              <span class="ml-auto text-[0.65rem] font-mono text-[#444d56]">
+              <span class="ml-auto text-[0.65rem] font-mono text-[#444d56]" data-i18n="index.featured.badge">
                 DESTAQUE
               </span>
             </div>
@@ -262,7 +264,7 @@ const totalTags   = getAllTags(publishedPT).length;
                 {featured.data.readingTime ?? calcReadingTime(featured.body)} min read
               </span>
               <span class="ml-auto flex items-center gap-1.5 text-[#6e7681] group-hover:text-[#00ff41] transition-colors">
-                ler post
+                <span data-i18n="index.featured.readPost">ler post</span>
                 <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -281,7 +283,7 @@ const totalTags   = getAllTags(publishedPT).length;
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
       <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h2 class="section-heading flex-1">posts recentes</h2>
+        <h2 class="section-heading flex-1" data-i18n="index.recent.heading">posts recentes</h2>
         <span class="text-[0.65rem] font-mono text-[#444d56]">
           {totalPosts} total
         </span>
@@ -290,8 +292,8 @@ const totalTags   = getAllTags(publishedPT).length;
       {totalPosts === 0 ? (
         <!-- Empty state -->
         <div class="py-16 text-center font-mono">
-          <p class="text-[#444d56] text-sm mb-2">// nenhum post publicado ainda</p>
-          <p class="text-[#6e7681] text-xs">conteúdo em breve</p>
+          <p class="text-[#444d56] text-sm mb-2" data-i18n="index.recent.empty1">// nenhum post publicado ainda</p>
+          <p class="text-[#6e7681] text-xs" data-i18n="index.recent.empty2">conteúdo em breve</p>
         </div>
       ) : (
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -370,10 +372,10 @@ const totalTags   = getAllTags(publishedPT).length;
           <span class="text-[#c9d1d9]">./contact.sh</span>
         </div>
 
-        <h2 class="text-xl md:text-2xl font-bold font-mono text-[#c9d1d9] mb-3">
+        <h2 class="text-xl md:text-2xl font-bold font-mono text-[#c9d1d9] mb-3" data-i18n="index.cta.heading">
           Precisa de um Red Team engagement?
         </h2>
-        <p class="text-[#6e7681] text-sm leading-relaxed mb-6 font-mono">
+        <p class="text-[#6e7681] text-sm leading-relaxed mb-6 font-mono" data-i18n="index.cta.desc">
           A KBM Security oferece operações profissionais de red team,
           pentest e serviços de simulação de adversários.
         </p>
@@ -396,11 +398,11 @@ const totalTags   = getAllTags(publishedPT).length;
 
         <!-- RSS hint -->
         <p class="mt-6 text-[0.65rem] text-[#444d56] font-mono">
-          Assine via{' '}
+          <span data-i18n="index.rss.pre">Assine via</span>{' '}
           <a href={`${base}feed.xml`} class="text-[#6e7681] hover:text-[#00ff41] transition-colors underline">
             feed RSS
           </a>
-          {' '}— fique por dentro das novas técnicas.
+          {' '}<span data-i18n="index.rss.post">— fique por dentro das novas técnicas.</span>
         </p>
       </div>
 

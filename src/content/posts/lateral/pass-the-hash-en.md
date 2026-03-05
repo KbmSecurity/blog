@@ -1,9 +1,9 @@
 ---
-title: Pass-the-Hash — Lateral Movement sem senha em texto claro
+title: Pass-the-Hash — Lateral Movement Without a Cleartext Password
 date: 2025-02-03T00:00:00.000Z
 description: >-
-  Como capturar hashes NTLM e usá-los diretamente para autenticação lateral em
-  redes Windows sem necessidade de crackear a senha.
+  How to capture NTLM hashes and use them directly for lateral authentication
+  on Windows networks without cracking the password.
 category: lateral
 os:
   - windows

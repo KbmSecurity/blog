@@ -3,6 +3,10 @@ import BaseHead from '../components/BaseHead.astro';
 import TopNav from '../components/TopNav.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
+import { translations } from '../i18n/translations';
+
+// Serialise at build time so the inline script carries no module imports
+const i18nJSON = JSON.stringify(translations);
 
 import "@fontsource/jetbrains-mono/300.css";
 import "@fontsource/jetbrains-mono/400.css";
@@ -12,7 +16,9 @@ import "@fontsource/jetbrains-mono/700.css";
 
 interface Props {
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   image?: string;
   type?: 'website' | 'article';
   publishDate?: Date;
@@ -26,7 +32,9 @@ interface Props {
 
 const {
   title,
+  titleEn,
   description,
+  descriptionEn,
   image,
   type = 'website',
   publishDate,
@@ -61,6 +69,19 @@ const {
       noIndex={noIndex}
     />
   </head>
+
+  {/* Hidden element carrying per-page PT/EN title+description for applyTranslations() */}
+  {(titleEn || descriptionEn) && (
+    <span
+      id="page-i18n"
+      hidden
+      aria-hidden="true"
+      data-title-pt={title}
+      data-title-en={titleEn ?? title}
+      data-desc-pt={description}
+      data-desc-en={descriptionEn ?? description}
+    />
+  )}
 
   <body class={`bg-term-bg text-term-text font-mono antialiased min-h-screen flex flex-col ${className}`}>
 
@@ -175,6 +196,60 @@ const {
       } else {
         initCodeBlocks();
       }
+    </script>
+
+    <!-- ── i18n: apply translations on load & expose global helper ───── -->
+    <script define:vars={{ i18nJSON }}>
+      (function () {
+        const T = JSON.parse(i18nJSON);
+
+        /**
+         * Loops all [data-i18n] elements and sets their textContent from the
+         * translations map for the given lang ('pt' | 'en').
+         *
+         * Elements that carry `data-i18n-html` as well use innerHTML instead
+         * (useful for strings with inline markup like <a> tags).
+         */
+        function applyTranslations(lang) {
+          const map = T[lang] || T['pt'];
+          document.querySelectorAll('[data-i18n]').forEach(function (el) {
+            const key = el.getAttribute('data-i18n');
+            if (key && map[key] !== undefined) {
+              if (el.hasAttribute('data-i18n-html')) {
+                el.innerHTML = map[key];
+              } else {
+                el.textContent = map[key];
+              }
+            }
+          });
+
+          // ── Swap page <title> and <meta name="description"> ──────────────
+          const pageMeta = document.getElementById('page-i18n');
+          if (pageMeta) {
+            const newTitle = pageMeta.getAttribute('data-title-' + lang);
+            const newDesc  = pageMeta.getAttribute('data-desc-'  + lang);
+            if (newTitle) document.title = newTitle;
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc && newDesc) metaDesc.setAttribute('content', newDesc);
+          }
+
+          // Update <html lang> for accessibility
+          document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+        }
+
+        // Expose globally so ToggleLang.tsx can call it
+        window.applyTranslations = applyTranslations;
+
+        // Apply on first load using stored preference
+        const stored = localStorage.getItem('kbm-lang') || 'pt';
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function () {
+            applyTranslations(stored);
+          });
+        } else {
+          applyTranslations(stored);
+        }
+      })();
     </script>
 
     <!-- Smooth page entry animation -->

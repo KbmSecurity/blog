@@ -1,9 +1,9 @@
 ---
-title: Passive Recon & OSINT — Mapeando o Alvo Sem Fazer Ruído
+title: Passive Recon & OSINT — Mapping the Target Without Making Noise
 date: 2025-01-07T00:00:00.000Z
 description: >-
-  Técnicas de reconhecimento passivo e OSINT para mapear infraestrutura,
-  funcionários e superfície de ataque antes de qualquer engajamento ativo.
+  Passive reconnaissance and OSINT techniques to map infrastructure,
+  employees, and attack surface before any active engagement.
 category: recon
 os:
   - linux

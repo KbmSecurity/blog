@@ -1,10 +1,9 @@
 ---
-title: Abuso de SUID — Escalando para Root com Binários Esquecidos
+title: SUID Abuse — Escalating to Root with Forgotten Binaries
 date: 2025-01-14T00:00:00.000Z
 description: >-
-  Como binários SUID mal configurados no Linux podem ser usados como arma para
-  escalonamento de privilégios usando técnicas do GTFOBins e scripts de
-  enumeração customizados.
+  How misconfigured SUID binaries on Linux can be weaponized for privilege
+  escalation using GTFOBins techniques and custom enumeration scripts.
 category: privesc
 os:
   - linux

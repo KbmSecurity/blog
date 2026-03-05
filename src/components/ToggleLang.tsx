@@ -15,6 +15,11 @@ export default function ToggleLang() {
         localStorage.setItem("kbm-lang", next);
         document.documentElement.setAttribute("data-lang", next);
 
+        // Swap all [data-i18n] element text immediately
+        if (typeof (window as any).applyTranslations === "function") {
+            (window as any).applyTranslations(next);
+        }
+
         const currentPath = window.location.pathname;
         if (currentPath.includes("/post/")) {
             // Strip trailing slash if present for easier logic

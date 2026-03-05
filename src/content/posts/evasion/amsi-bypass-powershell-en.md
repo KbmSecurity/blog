@@ -1,9 +1,9 @@
 ---
-title: AMSI Bypass — Desabilitando o Antimalware Scan Interface no PowerShell
+title: AMSI Bypass — Disabling the Antimalware Scan Interface in PowerShell
 date: 2025-02-10T00:00:00.000Z
 description: >-
-  Técnicas para contornar o AMSI (Antimalware Scan Interface) do Windows e
-  executar payloads PowerShell sem detecção por soluções AV/EDR.
+  Techniques to bypass AMSI (Antimalware Scan Interface) on Windows and
+  execute PowerShell payloads undetected by AV/EDR solutions.
 category: evasion
 os:
   - windows

@@ -183,7 +183,7 @@ function isActive(href: string, exact = false): boolean {
         <span class="sep">:</span>
         <span class="path">~/blog</span>
         <span class="arrow">$</span>
-        <span class="text-[#c9d1d9]">navegar</span>
+        <span class="text-[#c9d1d9]" data-i18n="nav.mobile.title">navegar</span>
     </p>
 
     {
@@ -209,7 +209,7 @@ function isActive(href: string, exact = false): boolean {
                 </span>
                 {label}
                 {isActive(href, exact) && (
-                    <span class="ml-auto text-[0.6rem] text-[#00ff41] tracking-wider uppercase">
+                    <span class="ml-auto text-[0.6rem] text-[#00ff41] tracking-wider uppercase" data-i18n="nav.mobile.active">
                         ativo
                     </span>
                 )}
@@ -241,7 +241,7 @@ function isActive(href: string, exact = false): boolean {
             kbmsecurity.com.br — Serviços Red Team
         </a>
 
-        <p class="mt-4 text-[0.65rem] text-[#444d56] leading-relaxed">
+        <p class="mt-4 text-[0.65rem] text-[#444d56] leading-relaxed" data-i18n="nav.mobile.legal">
             ⚠ Apenas para uso autorizado. Todo o conteúdo é para fins educacionais e
             pesquisa profissional em segurança.
         </p>

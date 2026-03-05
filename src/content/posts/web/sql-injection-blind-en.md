@@ -1,9 +1,9 @@
 ---
-title: Blind SQL Injection — Extraindo dados sem ver o output
+title: Blind SQL Injection — Extracting Data Without Seeing the Output
 date: 2025-02-10T00:00:00.000Z
 description: >-
-  Técnicas de exploração de Blind SQL Injection (boolean-based e time-based)
-  para extração de dados quando a aplicação não retorna erros visíveis.
+  Blind SQL Injection exploitation techniques (boolean-based and time-based)
+  for data extraction when the application returns no visible errors.
 category: web
 os:
   - linux
