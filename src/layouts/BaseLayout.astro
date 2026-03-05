@@ -83,31 +83,62 @@ const {
           if (pre.dataset.initialized) return;
           pre.dataset.initialized = 'true';
 
-          // Make pre relative for absolute children
-          pre.style.position = 'relative';
+          const code = pre.querySelector('code');
 
-          // ── Language label ─────────────────────────────────────────
+          // ── Detect language ─────────────────────────────────────────
           let lang = pre.dataset.language;
-          if (!lang) {
-            const code = pre.querySelector('code');
-            if (code) {
-              const langClass = [...code.classList].find((c) =>
-                c.startsWith('language-')
-              );
-              if (langClass) lang = langClass.replace('language-', '');
-            }
-          }
-          if (lang && lang !== 'text' && lang !== 'plaintext') {
-            const label = document.createElement('span');
-            label.textContent = lang;
-            label.className   = 'lang-label';
-            pre.appendChild(label);
+          if (!lang && code) {
+            const langClass = [...code.classList].find((c) =>
+              c.startsWith('language-')
+            );
+            if (langClass) lang = langClass.replace('language-', '');
           }
 
-          // ── Copy button ────────────────────────────────────────────
+          // ── Detect filename from first comment line (e.g. "# foo.sh") ──
+          let filename = '';
+          if (code) {
+            const firstLine = (code.textContent ?? '').split('\n')[0].trim();
+            const fnMatch = firstLine.match(/^(?:#|\/\/)\s*([\w.\-/]+\.\w+)\s*$/);
+            if (fnMatch) filename = fnMatch[1];
+          }
+
+          // ── Build wrapper ───────────────────────────────────────────
+          const wrapper = document.createElement('div');
+          wrapper.className = 'code-block-wrapper';
+
+          // ── Build header ────────────────────────────────────────────
+          const header = document.createElement('div');
+          header.className = 'code-header';
+
+          // Left: dots + filename
+          const leftGroup = document.createElement('div');
+          leftGroup.className = 'code-header-left';
+
+          const dots = document.createElement('div');
+          dots.className = 'code-dots';
+          dots.innerHTML = '<span class="dot-red"></span><span class="dot-yellow"></span><span class="dot-green"></span>';
+          leftGroup.appendChild(dots);
+
+          const filenameEl = document.createElement('span');
+          filenameEl.className = 'code-filename';
+          filenameEl.textContent = filename;
+          leftGroup.appendChild(filenameEl);
+          header.appendChild(leftGroup);
+
+          // Right: lang badge + copy button group
+          const rightGroup = document.createElement('div');
+          rightGroup.className = 'code-header-right';
+
+          if (lang && lang !== 'text' && lang !== 'plaintext') {
+            const badge = document.createElement('span');
+            badge.className = 'code-lang';
+            badge.textContent = lang.toUpperCase();
+            rightGroup.appendChild(badge);
+          }
+
           const btn = document.createElement('button');
           btn.textContent = 'copiar';
-          btn.className   = 'copy-btn';
+          btn.className = 'copy-btn';
           btn.setAttribute('aria-label', 'Copiar código para área de transferência');
 
           btn.addEventListener('click', async () => {
@@ -128,7 +159,13 @@ const {
             }
           });
 
-          pre.appendChild(btn);
+          rightGroup.appendChild(btn);
+          header.appendChild(rightGroup);
+
+          // Insert wrapper around the pre
+          pre.parentNode?.insertBefore(wrapper, pre);
+          wrapper.appendChild(header);
+          wrapper.appendChild(pre);
         });
       }
 

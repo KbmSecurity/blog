@@ -56,9 +56,15 @@ export default function ToggleLang() {
                         letterSpacing: "0.08em",
                         fontFamily: "monospace",
                         transition: "all 0.18s ease",
-                        background: lang === l ? "#1a2e1a" : "transparent",
-                        color: lang === l ? "#4ade80" : "#444",
-                        border: lang === l ? "1px solid #2d5a2d" : "1px solid transparent",
+                        background: lang === l
+                            ? (l === "pt" ? "#1a2e1a" : "#2e1a1a")
+                            : "transparent",
+                        color: lang === l
+                            ? (l === "pt" ? "#4ade80" : "#ff3c3c")
+                            : "#444",
+                        border: lang === l
+                            ? (l === "pt" ? "1px solid #2d5a2d" : "1px solid #5a2d2d")
+                            : "1px solid transparent",
                         display: "flex",
                         alignItems: "center",
                         gap: "5px",

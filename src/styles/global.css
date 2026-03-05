@@ -387,18 +387,135 @@
         border: 1px solid var(--border-bright);
     }
 
-    /* Code blocks — Shiki */
+    /* ── Code block wrapper (header + pre) ──────────────────────────── */
+    .code-block-wrapper {
+        margin: 1.5rem 0;
+        border: 1px solid var(--border-bright);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--bg-raised);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    /* Header bar */
+    .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.55rem 0.9rem;
+        background: #161a1e;
+        border-bottom: 1px solid rgba(255, 60, 60, 0.15);
+        border-left: 3px solid #ff3c3c;
+        gap: 0.75rem;
+        min-height: 2.2rem;
+    }
+
+    /* Left section: dots + filename */
+    .code-header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    /* macOS-style terminal dots */
+    .code-dots {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-shrink: 0;
+    }
+
+    .code-dots span {
+        display: block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .code-dots .dot-red {
+        background: #ff5f57;
+    }
+
+    .code-dots .dot-yellow {
+        background: #ffbd2e;
+    }
+
+    .code-dots .dot-green {
+        background: #28c840;
+    }
+
+    .code-filename {
+        font-family: var(--font-mono, monospace);
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        letter-spacing: 0.03em;
+    }
+
+    .code-header-right {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Language badge */
+    .code-lang {
+        font-family: var(--font-mono, monospace);
+        font-size: 0.58rem;
+        letter-spacing: 0.12em;
+        color: #00ff41;
+        background: rgba(0, 255, 65, 0.07);
+        border: 1px solid rgba(0, 255, 65, 0.2);
+        border-radius: 3px;
+        padding: 0.12rem 0.45rem;
+        text-transform: uppercase;
+    }
+
+    /* Copy button */
+    .copy-btn {
+        padding: 0.18rem 0.55rem;
+        font-size: 0.62rem;
+        font-family: var(--font-mono, monospace);
+        color: var(--text-dim);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 3px;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+        color: var(--green);
+        border-color: rgba(0, 255, 65, 0.35);
+        background: rgba(0, 255, 65, 0.05);
+    }
+
+    .copy-btn.copied {
+        color: var(--green);
+        border-color: rgba(0, 255, 65, 0.35);
+    }
+
+    /* Code blocks — Shiki  (no border/radius: wrapper handles it) */
     .post-content pre,
     .astro-code {
         background: var(--bg-raised) !important;
-        border: 1px solid var(--border-bright) !important;
-        border-radius: 6px !important;
-        padding: 1.25rem 1.5rem !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 1.1rem 1.4rem !important;
         overflow-x: auto;
-        margin: 1.5rem 0;
+        margin: 0;
         font-size: 0.855rem;
         line-height: 1.7;
         position: relative;
+    }
+
+    /* When the pre is NOT inside our wrapper (edge cases) keep a border */
+    .post-content pre:not(.code-block-wrapper > pre),
+    .astro-code:not(.code-block-wrapper > .astro-code) {
+        border: 1px solid var(--border-bright) !important;
+        border-radius: 6px !important;
+        margin: 1.5rem 0 !important;
     }
 
     .post-content pre code {
@@ -407,47 +524,6 @@
         padding: 0 !important;
         color: inherit;
         font-size: inherit;
-    }
-
-    /* Copy button injected by script */
-    .copy-btn {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.6rem;
-        padding: 0.2rem 0.6rem;
-        font-size: 0.65rem;
-        font-family: inherit;
-        color: var(--text-muted);
-        background: var(--bg-card);
-        border: 1px solid var(--border-bright);
-        border-radius: 3px;
-        cursor: pointer;
-        transition:
-            color 0.15s,
-            border-color 0.15s;
-        letter-spacing: 0.05em;
-    }
-
-    .copy-btn:hover {
-        color: var(--green);
-        border-color: var(--green);
-    }
-
-    .copy-btn.copied {
-        color: var(--green);
-        border-color: var(--green);
-    }
-
-    /* Language label injected by script */
-    .lang-label {
-        position: absolute;
-        top: 0.75rem;
-        right: 4.5rem;
-        font-size: 0.6rem;
-        color: var(--text-dim);
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        pointer-events: none;
     }
 
     /* Blockquote */
