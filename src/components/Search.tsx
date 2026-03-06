@@ -16,6 +16,7 @@ interface SearchEntry {
   difficulty: string;
   tags: string;
   slug: string;
+  lang: string;
 }
 
 type OramaDB = AnyOrama;
@@ -79,6 +80,7 @@ export default function Search({ baseUrl }: SearchProps) {
           difficulty: "string",
           tags: "string",
           slug: "string",
+          lang: "string",
         } as const,
       });
 
@@ -199,16 +201,19 @@ export default function Search({ baseUrl }: SearchProps) {
       const res = await oramaSearch(db, {
         term: query,
         properties: ["title", "description", "tags", "category"],
-        limit: 8,
+        limit: 20,
         tolerance: 1,
       });
-      setResults(res.hits.map((h) => h.document as unknown as SearchEntry));
+      const all = res.hits.map((h) => h.document as unknown as SearchEntry);
+      // Filter to current language, then cap at 8
+      const filtered = all.filter((e) => e.lang === lang);
+      setResults(filtered.slice(0, 8));
       setActiveIndex(-1);
     };
 
     const timer = setTimeout(run, 120);
     return () => clearTimeout(timer);
-  }, [db, query]);
+  }, [db, query, lang]);
 
   // ── Keyboard nav inside results ─────────────────────────────────────────────
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
