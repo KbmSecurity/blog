@@ -68,9 +68,8 @@ const {
       readingTime={readingTime}
       noIndex={noIndex}
     />
-  </head>
 
-  {/* Hidden element carrying per-page PT/EN title+description for applyTranslations() */}
+  <!-- Hidden element carrying per-page PT/EN title+description for applyTranslations() -->
   {(titleEn || descriptionEn) && (
     <span
       id="page-i18n"
@@ -82,6 +81,8 @@ const {
       data-desc-en={descriptionEn ?? description}
     />
   )}
+  </head>
+
 
   <body class={`bg-term-bg text-term-text font-mono antialiased min-h-screen flex flex-col ${className}`}>
 
