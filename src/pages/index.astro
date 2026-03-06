@@ -21,8 +21,8 @@ const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
 
 const allPosts   = await getCollection('posts');
 const published  = filterPublished(allPosts);
-const publishedPT = published.filter(p => !p.slug.endsWith('-en'));
-const publishedEN = published.filter(p => p.slug.endsWith('-en'));
+const publishedPT = published.filter(p => !p.id.endsWith('-en'));
+const publishedEN = published.filter(p => p.id.endsWith('-en'));
 
 const sortedPT   = sortPostsByDate(publishedPT);
 const sortedEN   = sortPostsByDate(publishedEN);
@@ -202,13 +202,13 @@ const totalTags   = getAllTags(publishedPT).length;
   <!-- ── Featured Post ──────────────────────────────────────────────────────── -->
   <div id="destaques"></div>
   {featuredPosts.map(featured => (
-    <section class:list={["border-b border-[#1c1c1c]", featured.slug.endsWith('-en') ? 'lang-en' : 'lang-pt']}>
+    <section class:list={["border-b border-[#1c1c1c]", featured.id.endsWith('-en') ? 'lang-en' : 'lang-pt']}>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         <h2 class="section-heading mb-6" data-i18n="index.featured.heading">destaque</h2>
 
         <a
-          href={postUrl(base, featured.slug)}
+          href={postUrl(base, featured.id)}
           class="group block relative overflow-hidden rounded-lg border border-[#1c1c1c]
                  bg-[#111111] hover:border-[#2a2a2a] transition-all duration-300
                  hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,255,65,0.05)]"
@@ -301,9 +301,9 @@ const totalTags   = getAllTags(publishedPT).length;
             <div
               class:list={[
                 "animate-fade-in-up h-full",
-                post.slug.endsWith('-en') ? 'lang-en' : 'lang-pt'
+                post.id.endsWith('-en') ? 'lang-en' : 'lang-pt'
               ]}
-              style={`animation-delay: ${i * 0.06}s; opacity: 0;`}
+              style={`animation-delay: ${i * 0.05}s; opacity: 0; animation-fill-mode: forwards;`}
             >
               <PostCard post={post} />
             </div>

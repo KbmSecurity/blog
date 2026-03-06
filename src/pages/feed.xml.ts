@@ -1,5 +1,5 @@
 import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { sortPostsByDate, filterPublished } from '../utils/content';
 import type { APIRoute } from 'astro';
@@ -12,14 +12,14 @@ export const GET: APIRoute = async (context) => {
 
   const items = await Promise.all(
     posts.map(async (post) => {
-      const { Content } = await post.render();
+      const { Content } = await render(post);
       const content = await container.renderToString(Content);
 
       return {
         title: post.data.title,
         description: post.data.description,
         pubDate: post.data.date,
-        link: `/blog/post/${post.slug}/`,
+        link: `/blog/post/${post.id}/`,
         content,
         categories: [post.data.category, ...post.data.tags],
         customData: `

@@ -211,7 +211,7 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
               <div
                 class:list={[
                   "animate-fade-in-up h-full",
-                  post.slug.endsWith('-en') ? 'lang-en' : 'lang-pt'
+                  post.id.endsWith('-en') ? 'lang-en' : 'lang-pt'
                 ]}
                 style={`animation-delay: ${i * 0.05}s; opacity: 0; animation-fill-mode: forwards;`}
               >
@@ -257,7 +257,7 @@ const categoriesInSet = [...new Set(matchedPosts.map((p) => p.data.category))];
                 .filter((p) => p.data.category === key)
                 .reduce((acc, p) => {
                   // count only one post per bilingual pair
-                  const base = p.slug.replace(/-(en|pt)$/, '');
+                  const base = p.id.replace(/-(en|pt)$/, '');
                   acc.add(base);
                   return acc;
                 }, new Set()).size;

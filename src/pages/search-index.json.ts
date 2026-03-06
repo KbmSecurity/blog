@@ -7,15 +7,15 @@ export const GET: APIRoute = async () => {
   const posts = filterPublished(allPosts);
 
   const index = posts.map((post) => ({
-    id: post.slug,
+    id: post.id,
     title: post.data.title,
     description: post.data.description,
     category: post.data.category,
     difficulty: post.data.difficulty,
     tags: post.data.tags.join(' '),
     os: post.data.os.join(' '),
-    slug: post.slug,
-    lang: post.slug.endsWith('-en') ? 'en' : 'pt',
+    slug: post.id,
+    lang: post.id.endsWith('-en') ? 'en' : 'pt',
     readingTime: post.data.readingTime ?? calcReadingTime(post.body),
     date: post.data.date.toISOString(),
   }));

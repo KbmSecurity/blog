@@ -1,12 +1,8 @@
 import { defineCollection, z } from "astro:content";
+import { glob } from "astro/loaders";
 
 const posts = defineCollection({
-  // Using legacy content collections (type: 'content') for Astro 5 compatibility.
-  // The `legacy: { collections: true }` flag in astro.config.mjs enables this API.
-  // This preserves the `post.slug` property used throughout the codebase.
-  // Migration to the Content Layer glob() loader can be done in a future iteration
-  // once all `post.slug` references are updated to `post.id`.
-  type: "content",
+  loader: glob({ pattern: "*.{md,mdx}", base: "./posts" }),
   schema: z.object({
     title: z.string().max(120),
 

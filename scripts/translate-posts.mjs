@@ -6,7 +6,7 @@ import { globSync } from 'glob';
 
 const CONFIG = {
     protectedTerms: ['SUID', 'NTLM', 'AMSI', 'GTFOBins', 'mimikatz', 'root', 'privesc', 'bash', 'sh', 'Linux', 'Windows'],
-    postsDir: path.join(process.cwd(), 'src/content/blog') // Using standard path, maybe it's posts?
+    postsDir: path.join(process.cwd(), 'posts') // Using the flat posts directory at project root
 };
 
 // Handle CLI args
@@ -15,7 +15,7 @@ const isDryRun = args.includes('--dry-run');
 const fileArgIndex = args.indexOf('--file');
 const specificFile = fileArgIndex !== -1 ? args[fileArgIndex + 1] : null;
 
-// Adjust directory if posts are in src/content/posts
+// Adjust directory if it somehow changed
 if (!fs.existsSync(CONFIG.postsDir) && fs.existsSync(path.join(process.cwd(), 'src/content/posts'))) {
     CONFIG.postsDir = path.join(process.cwd(), 'src/content/posts');
 }

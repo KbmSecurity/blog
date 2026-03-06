@@ -6,33 +6,32 @@ Complete reference for writing and publishing posts on the KBM Security blog.
 
 ## 1. File Location & Naming
 
-Every post is a plain Markdown file (`.md`) placed inside the correct category folder:
+Every post is a plain Markdown file (`.md`) placed flat inside the `posts` folder at the root of the project:
 
 ```
-src/content/posts/<category>/<your-slug>.md
+posts/<your-slug>.md
 ```
 
-The **folder name must match the `category` field** in the frontmatter (see §3).  
 The **filename becomes the URL slug** — keep it lowercase, hyphen-separated, descriptive.
 
-### Available category folders
+### Available categories (for frontmatter)
 
-| Folder | URL path | Use for |
+| Value | URL path | Use for |
 |---|---|---|
-| `recon/` | `/blog/tags/recon` | Reconnaissance, OSINT, footprinting |
-| `privesc/` | `/blog/tags/privesc` | Privilege escalation (Linux & Windows) |
-| `lateral/` | `/blog/tags/lateral` | Lateral movement, pivoting |
-| `exfil/` | `/blog/tags/exfil` | Data exfiltration techniques |
-| `evasion/` | `/blog/tags/evasion` | AV/EDR evasion, obfuscation |
-| `web/` | `/blog/tags/web` | Web exploitation, OWASP, APIs |
-| `cloud/` | `/blog/tags/cloud` | AWS/Azure/GCP attack & abuse |
+| `recon` | `/blog/tags/recon` | Reconnaissance, OSINT, footprinting |
+| `privesc` | `/blog/tags/privesc` | Privilege escalation (Linux & Windows) |
+| `lateral` | `/blog/tags/lateral` | Lateral movement, pivoting |
+| `exfil` | `/blog/tags/exfil` | Data exfiltration techniques |
+| `evasion` | `/blog/tags/evasion` | AV/EDR evasion, obfuscation |
+| `web` | `/blog/tags/web` | Web exploitation, OWASP, APIs |
+| `cloud` | `/blog/tags/cloud` | AWS/Azure/GCP attack & abuse |
 
 ### Example
 
 A post about SQL injection goes in:
 
 ```
-src/content/posts/web/sql-injection-auth-bypass.md
+posts/sql-injection-auth-bypass.md
 ```
 
 Its live URL will be:
@@ -130,7 +129,7 @@ Must be **exactly one** of the following values:
 category: privesc
 ```
 
-> **The folder and the category value must match.** A file in `posts/privesc/` must have `category: privesc`.
+> **Important:** The `category` value determines the tag page it appears under. Although there are no longer category subfolders, this field is strictly required by the schema.
 
 ---
 
@@ -407,7 +406,7 @@ A well-structured post follows this order. Not every section is mandatory, but i
 ## 6. Complete Worked Example
 
 ```
-src/content/posts/web/sql-injection-auth-bypass.md
+posts/sql-injection-auth-bypass.md
 ```
 
 ```markdown
@@ -577,7 +576,6 @@ Before setting `status: published`, verify:
 - [ ] `date` is in `YYYY-MM-DD` format
 - [ ] All code blocks have a language identifier
 - [ ] No `#` H1 headings in the body (title is already H1)
-- [ ] MITRE IDs verified at [attack.mitre.org](https://attack.mitre.org) if used
 - [ ] Sensitive / real credentials scrubbed from code examples
 - [ ] `status: published` set when ready
 
@@ -586,19 +584,11 @@ Before setting `status: published`, verify:
 ## 8. Folder Structure Quick Reference
 
 ```
-src/
-└── content/
-    └── posts/
-        ├── recon/
-        │   └── passive-recon-osint.md
-        ├── privesc/
-        │   └── suid-abuse-linux.md
-        ├── lateral/
-        │   └── your-new-post.md       ← new file goes here
-        ├── exfil/
-        ├── evasion/
-        ├── web/
-        └── cloud/
+posts/
+├── passive-recon-osint.md
+├── suid-abuse-linux.md
+├── sql-injection-auth-bypass.md
+└── your-new-post.md       ← new file goes here
 ```
 
 ---
@@ -637,11 +627,7 @@ export const CATEGORY_META = {
 };
 ```
 
-Then create the folder:
-
-```bash
-mkdir src/content/posts/maldev
-```
+Then you can use that category in the frontmatter of any post.
 
 ---
 

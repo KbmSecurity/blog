@@ -83,14 +83,8 @@ kbm.blog/
 │   │   └── TOC.tsx             # Scroll-tracked table of contents (React island)
 │   ├── content/
 │   │   ├── config.ts           # Content collections schema (Zod)
-│   │   └── posts/
-│   │       ├── recon/          # Reconnaissance posts
-│   │       ├── privesc/        # Privilege escalation posts
-│   │       ├── lateral/        # Lateral movement posts
-│   │       ├── exfil/          # Exfiltration posts
-│   │       ├── evasion/        # AV/EDR evasion posts
-│   │       ├── web/            # Web attack posts
-│   │       └── cloud/          # Cloud security posts
+│   │   └── config.ts           # Content schema (Zod) + Content Layer Glob Loader
+├── posts/                      # Markdown blog posts (flat directory)
 │   ├── layouts/
 │   │   ├── BaseLayout.astro    # Root layout with nav, footer, copy buttons
 │   │   └── PostLayout.astro    # Article layout with TOC, MITRE card, related posts
@@ -118,10 +112,10 @@ kbm.blog/
 
 ### Creating a New Post
 
-1. Create a Markdown file inside the appropriate category folder:
+1. Create a Markdown file in the `posts/` folder at the root level:
 
 ```
-src/content/posts/<category>/<slug>.md
+posts/<slug>.md
 ```
 
 2. Add the required frontmatter:

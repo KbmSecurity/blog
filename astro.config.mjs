@@ -22,11 +22,6 @@ export default defineConfig({
     },
   },
 
-  // Keep legacy content collections API (type: 'content') working in Astro 5
-  // Migration to Content Layer can be done in a future iteration
-  legacy: {
-    collections: true,
-  },
 
   vite: {
     build: {

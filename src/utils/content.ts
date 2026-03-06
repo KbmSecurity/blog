@@ -174,10 +174,10 @@ export function filterPublished(posts: Post[]): Post[] {
 export function deduplicatePosts(posts: Post[]): Post[] {
   const seen = new Map<string, Post>();
   for (const post of posts) {
-    const base = post.slug.replace(/-(en|pt)$/, "");
+    const base = post.id.replace(/-(en|pt)$/, "");
     const existing = seen.get(base);
     // Prefer PT; if no entry yet, or current is PT and existing is EN → overwrite
-    if (!existing || (!post.slug.endsWith("-en") && existing.slug.endsWith("-en"))) {
+    if (!existing || (!post.id.endsWith("-en") && existing.id.endsWith("-en"))) {
       seen.set(base, post);
     }
   }
@@ -239,7 +239,7 @@ export function getRelatedPosts(
   limit = 3,
 ): Post[] {
   const others = allPosts.filter(
-    (p) => p.slug !== current.slug && p.data.status === "published",
+    (p) => p.id !== current.id && p.data.status === "published",
   );
 
   const scored = others.map((p) => {

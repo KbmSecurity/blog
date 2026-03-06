@@ -40,8 +40,7 @@ meaningfully demonstrated in the writeup.
 
 ## CONTENT STRUCTURE
 
-Write the body using the structure of the pdf file. Use Brazilian Portuguese (pt-BR) since that 
-is the blog's language for CTF posts.
+Write the body using the structure of the pdf file. Translate from source Brazilian Portuguese (pt-BR) to English (en).
 
 ---
 
